@@ -26,12 +26,12 @@ from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-import FM_epy_block_0 as epy_block_0  # embedded python block
+import AM_epy_block_0 as epy_block_0  # embedded python block
 import sip
 
 
 
-class FM(gr.top_block, Qt.QWidget):
+class AM(gr.top_block, Qt.QWidget):
 
     def __init__(self):
         gr.top_block.__init__(self, "AM Audio modulation", catch_exceptions=True)
@@ -54,7 +54,7 @@ class FM(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("GNU Radio", "FM")
+        self.settings = Qt.QSettings("GNU Radio", "AM")
 
         try:
             geometry = self.settings.value("geometry")
@@ -267,7 +267,7 @@ class FM(gr.top_block, Qt.QWidget):
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
-        self.low_pass_filter_0 = filter.fir_filter_ccf(
+        self.low_pass_filter_0_0 = filter.fir_filter_ccf(
             1,
             firdes.low_pass(
                 1,
@@ -281,7 +281,7 @@ class FM(gr.top_block, Qt.QWidget):
 
         self.top_layout.addWidget(_id_write_button_toggle_button)
         self.epy_block_0 = epy_block_0.custom_file_writer(filename="output", num_samples=1024)
-        self.channels_channel_model_0 = channels.channel_model(
+        self.channels_channel_model_0_0 = channels.channel_model(
             noise_voltage=noise_volt,
             frequency_offset=freq_offset,
             epsilon=time_offset,
@@ -321,7 +321,7 @@ class FM(gr.top_block, Qt.QWidget):
         self.connect((self.audio_source_0, 0), (self.blocks_selector_0, 2))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_add_const_vxx_0, 0))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
-        self.connect((self.blocks_float_to_complex_0, 0), (self.low_pass_filter_0, 0))
+        self.connect((self.blocks_float_to_complex_0, 0), (self.low_pass_filter_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_multiply_xx_0, 1))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_float_to_complex_0, 0))
         self.connect((self.blocks_selector_0, 0), (self.band_pass_filter_0, 0))
@@ -329,15 +329,15 @@ class FM(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_selector_0, 1))
-        self.connect((self.channels_channel_model_0, 0), (self.epy_block_0, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.qtgui_time_sink_x_0_0, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
-        self.connect((self.low_pass_filter_0, 0), (self.channels_channel_model_0, 0))
+        self.connect((self.channels_channel_model_0_0, 0), (self.epy_block_0, 0))
+        self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_freq_sink_x_0, 0))
+        self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_time_sink_x_0_0, 0))
+        self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
+        self.connect((self.low_pass_filter_0_0, 0), (self.channels_channel_model_0_0, 0))
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("GNU Radio", "FM")
+        self.settings = Qt.QSettings("GNU Radio", "AM")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -356,14 +356,14 @@ class FM(gr.top_block, Qt.QWidget):
 
     def set_time_offset(self, time_offset):
         self.time_offset = time_offset
-        self.channels_channel_model_0.set_timing_offset(self.time_offset)
+        self.channels_channel_model_0_0.set_timing_offset(self.time_offset)
 
     def get_taps(self):
         return self.taps
 
     def set_taps(self, taps):
         self.taps = taps
-        self.channels_channel_model_0.set_taps(self.taps)
+        self.channels_channel_model_0_0.set_taps(self.taps)
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -383,21 +383,21 @@ class FM(gr.top_block, Qt.QWidget):
 
     def set_noise_volt(self, noise_volt):
         self.noise_volt = noise_volt
-        self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
+        self.channels_channel_model_0_0.set_noise_voltage(self.noise_volt)
 
     def get_if_rate(self):
         return self.if_rate
 
     def set_if_rate(self, if_rate):
         self.if_rate = if_rate
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.if_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
+        self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.if_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
 
     def get_freq_offset(self):
         return self.freq_offset
 
     def set_freq_offset(self, freq_offset):
         self.freq_offset = freq_offset
-        self.channels_channel_model_0.set_frequency_offset(self.freq_offset)
+        self.channels_channel_model_0_0.set_frequency_offset(self.freq_offset)
 
     def get_carrier_freq(self):
         return self.carrier_freq
@@ -409,7 +409,7 @@ class FM(gr.top_block, Qt.QWidget):
 
 
 
-def main(top_block_cls=FM, options=None):
+def main(top_block_cls=AM, options=None):
 
     qapp = Qt.QApplication(sys.argv)
 
