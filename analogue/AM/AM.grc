@@ -54,10 +54,10 @@ blocks:
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
-    start: '-0.1'
+    start: '-0.2'
     step: '0.001'
-    stop: '0.1'
-    value: '0.001'
+    stop: '0.2'
+    value: '0.00'
     widget: eng_slider
   states:
     bus_sink: false
@@ -165,23 +165,6 @@ blocks:
     coordinate: [288, 16.0]
     rotation: 0
     state: true
-- name: analog_const_source_x_0
-  id: analog_const_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: '0'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: float
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [816, 184.0]
-    rotation: 0
-    state: enabled
 - name: analog_sig_source_x_0
   id: analog_sig_source_x
   parameters:
@@ -202,7 +185,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [696, 248.0]
+    coordinate: [856, 224.0]
     rotation: 0
     state: enabled
 - name: audio_source_0
@@ -246,7 +229,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 380.0]
+    coordinate: [592, 380.0]
     rotation: 0
     state: true
 - name: blocks_add_const_vxx_0
@@ -264,7 +247,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [688, 440.0]
+    coordinate: [848, 416.0]
     rotation: 0
     state: enabled
 - name: blocks_float_to_complex_0
@@ -280,7 +263,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1216, 344.0]
+    coordinate: [1376, 320.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -298,7 +281,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [848, 440.0]
+    coordinate: [1008, 416.0]
     rotation: 0
     state: true
 - name: blocks_multiply_xx_0
@@ -316,7 +299,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1064, 344.0]
+    coordinate: [1224, 320.0]
     rotation: 0
     state: enabled
 - name: blocks_selector_0
@@ -360,7 +343,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 280.0]
+    coordinate: [1056, 256.0]
     rotation: 0
     state: enabled
 - name: blocks_wavfile_source_0
@@ -493,7 +476,7 @@ blocks:
     interp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samp_rate: if_rate
+    samp_rate: samp_rate
     type: fir_filter_ccf
     width: '2000'
     win: window.WIN_HAMMING
@@ -503,7 +486,7 @@ blocks:
     bus_structure: null
     coordinate: [184, 660.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: qtgui_freq_sink_x_0
   id: qtgui_freq_sink_x
   parameters:
@@ -582,7 +565,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 560.0]
+    coordinate: [888, 536.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -672,14 +655,14 @@ blocks:
     width8: '1'
     width9: '1'
     ylabel: Amplitude
-    ymax: '51'
+    ymax: '1'
     ymin: '-1'
     yunit: '""'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 264.0]
+    coordinate: [520, 248.0]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0_0
@@ -850,7 +833,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1376, 352.0]
+    coordinate: [1536, 328.0]
     rotation: 0
     state: enabled
 - name: virtual_source_0
@@ -868,7 +851,6 @@ blocks:
     state: enabled
 
 connections:
-- [analog_const_source_x_0, '0', blocks_float_to_complex_0, '1']
 - [analog_sig_source_x_0, '0', blocks_throttle2_0, '0']
 - [audio_source_0, '0', blocks_selector_0, '2']
 - [band_pass_filter_0, '0', blocks_add_const_vxx_0, '0']

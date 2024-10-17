@@ -185,7 +185,7 @@ class AM(gr.top_block, Qt.QWidget):
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-1, 51)
+        self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
@@ -271,7 +271,7 @@ class AM(gr.top_block, Qt.QWidget):
             1,
             firdes.low_pass(
                 1,
-                if_rate,
+                samp_rate,
                 5000,
                 2000,
                 window.WIN_HAMMING,
@@ -373,6 +373,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
         self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5000, 200, window.WIN_HAMMING, 6.76))
         self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
+        self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.samp_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
@@ -390,7 +391,6 @@ class AM(gr.top_block, Qt.QWidget):
 
     def set_if_rate(self, if_rate):
         self.if_rate = if_rate
-        self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.if_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
 
     def get_freq_offset(self):
         return self.freq_offset

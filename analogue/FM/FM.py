@@ -185,7 +185,7 @@ class FM(gr.top_block, Qt.QWidget):
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-1, 51)
+        self.qtgui_time_sink_x_0.set_y_axis(-1, 5)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
@@ -271,7 +271,7 @@ class FM(gr.top_block, Qt.QWidget):
             1,
             firdes.low_pass(
                 1,
-                if_rate,
+                samp_rate,
                 5000,
                 2000,
                 window.WIN_HAMMING,
@@ -290,6 +290,7 @@ class FM(gr.top_block, Qt.QWidget):
             block_tags=False)
         self.blocks_wavfile_source_0_0 = blocks.wavfile_source('../../Audio_Recording/audio', True)
         self.blocks_wavfile_source_0 = blocks.wavfile_source('../../Audio_Recording/audio', True)
+        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_float*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_selector_0 = blocks.selector(gr.sizeof_float*1,0,0)
         self.blocks_selector_0.set_enabled(True)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(volume)
@@ -320,13 +321,14 @@ class FM(gr.top_block, Qt.QWidget):
         ##################################################
         self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_0, 'enable_write'))
         self.connect((self.analog_nbfm_tx_0, 0), (self.low_pass_filter_0, 0))
-        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_add_xx_0, 0))
+        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.audio_source_0, 0), (self.blocks_selector_0, 2))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.blocks_add_xx_0, 0), (self.analog_nbfm_tx_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_add_xx_0, 1))
         self.connect((self.blocks_selector_0, 0), (self.band_pass_filter_0, 0))
         self.connect((self.blocks_selector_0, 0), (self.qtgui_time_sink_x_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.blocks_add_xx_0, 0))
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_selector_0, 1))
         self.connect((self.channels_channel_model_0, 0), (self.epy_block_0, 0))
@@ -372,6 +374,8 @@ class FM(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate
         self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
         self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5000, 200, window.WIN_HAMMING, 6.76))
+        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
+        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
@@ -389,7 +393,6 @@ class FM(gr.top_block, Qt.QWidget):
 
     def set_if_rate(self, if_rate):
         self.if_rate = if_rate
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.if_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
 
     def get_freq_offset(self):
         return self.freq_offset
