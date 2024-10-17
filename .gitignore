@@ -1,0 +1,5 @@
+# Ignore all .dat files
+*.dat
+
+# Ignore all __pycache__ directories
+__pycache__/
