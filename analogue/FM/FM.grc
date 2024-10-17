@@ -33,16 +33,16 @@ options:
     state: enabled
 
 blocks:
-- name: freq
+- name: carrier_freq
   id: variable
   parameters:
     comment: ''
-    value: '2400000000'
+    value: '5000'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 16.0]
+    coordinate: [392, 16.0]
     rotation: 0
     state: enabled
 - name: freq_offset
@@ -64,18 +64,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [952, 16.0]
-    rotation: 0
-    state: enabled
-- name: if_rate
-  id: variable
-  parameters:
-    comment: ''
-    value: '192000'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [392, 16.0]
     rotation: 0
     state: enabled
 - name: noise_volt
@@ -176,7 +164,7 @@ blocks:
     max_dev: 5e3
     maxoutbuf: '0'
     minoutbuf: '0'
-    quad_rate: if_rate
+    quad_rate: samp_rate*1
     tau: 75e-6
   states:
     bus_sink: false
@@ -205,7 +193,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [696, 176.0]
+    coordinate: [664, 168.0]
     rotation: 0
     state: enabled
 - name: audio_source_0
@@ -267,7 +255,23 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 400.0]
+    coordinate: [920, 408.0]
+    rotation: 0
+    state: enabled
+- name: blocks_complex_to_float_0
+  id: blocks_complex_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1112, 536.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -285,7 +289,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [720, 424.0]
+    coordinate: [736, 432.0]
     rotation: 0
     state: true
 - name: blocks_selector_0
@@ -329,7 +333,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 320.0]
+    coordinate: [776, 312.0]
     rotation: 0
     state: enabled
 - name: blocks_wavfile_source_0
@@ -583,12 +587,12 @@ blocks:
     color9: dark green
     comment: ''
     ctrlpanel: 'False'
-    entags: 'True'
+    entags: 'False'
     grid: 'False'
     gui_hint: ''
-    label1: Signal 1
+    label1: Audio Signal
     label10: Signal 10
-    label2: Signal 2
+    label2: FM Modulated Waveform
     label3: Signal 3
     label4: Signal 4
     label5: Signal 5
@@ -607,8 +611,8 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '""'
-    nconnections: '1'
+    name: '"Raw and Modulated Data"'
+    nconnections: '2'
     size: '1024'
     srate: samp_rate
     stemplot: 'False'
@@ -642,13 +646,13 @@ blocks:
     width9: '1'
     ylabel: Amplitude
     ymax: '5'
-    ymin: '-1'
+    ymin: '-5'
     yunit: '""'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [520, 280.0]
+    coordinate: [1304, 488.0]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0_0
@@ -837,14 +841,16 @@ blocks:
     state: enabled
 
 connections:
+- [analog_nbfm_tx_0, '0', blocks_complex_to_float_0, '0']
 - [analog_nbfm_tx_0, '0', low_pass_filter_0, '0']
 - [analog_sig_source_x_0, '0', blocks_throttle2_0, '0']
 - [audio_source_0, '0', blocks_selector_0, '2']
 - [band_pass_filter_0, '0', blocks_multiply_const_vxx_0, '0']
 - [blocks_add_xx_0, '0', analog_nbfm_tx_0, '0']
+- [blocks_complex_to_float_0, '0', qtgui_time_sink_x_0, '1']
 - [blocks_multiply_const_vxx_0, '0', blocks_add_xx_0, '1']
+- [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_selector_0, '0', band_pass_filter_0, '0']
-- [blocks_selector_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_throttle2_0, '0', blocks_add_xx_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_selector_0, '0']
 - [blocks_wavfile_source_0_0, '0', blocks_selector_0, '1']

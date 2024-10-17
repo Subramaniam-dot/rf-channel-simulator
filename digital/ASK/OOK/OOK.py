@@ -70,7 +70,7 @@ class OOK(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate = 32000
         self.noise_volt = noise_volt = 0.01
         self.n_samples = n_samples = 1024
-        self.freq_offset = freq_offset = 0.001
+        self.freq_offset = freq_offset = 0.00
         self.filename = filename = "OOK"
         self.M = M = 4
 
@@ -84,7 +84,7 @@ class OOK(gr.top_block, Qt.QWidget):
         self._noise_volt_range = qtgui.Range(0, 1, 0.01, 0.01, 200)
         self._noise_volt_win = qtgui.RangeWidget(self._noise_volt_range, self.set_noise_volt, "Channel: Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._noise_volt_win)
-        self._freq_offset_range = qtgui.Range(-0.1, 0.1, 0.001, 0.001, 200)
+        self._freq_offset_range = qtgui.Range(-0.2, 0.2, 0.001, 0.00, 200)
         self._freq_offset_win = qtgui.RangeWidget(self._freq_offset_range, self.set_freq_offset, "Channel: Frequency Offset", "eng_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_offset_win)
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
@@ -125,7 +125,7 @@ class OOK(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
             1024, #size
             samp_rate, #samp_rate
-            "", #name
+            'Raw and Modulated Data', #name
             2, #number of inputs
             None # parent
         )
@@ -143,7 +143,7 @@ class OOK(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_1.enable_stem_plot(False)
 
 
-        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
+        labels = ['Digital Data', 'OOK Modulated Waveform', 'Signal 3', 'Signal 4', 'Signal 5',
             'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
@@ -303,9 +303,9 @@ class OOK(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_char_to_float_0, 0), (self.blocks_repeat_0, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_float_to_complex_0, 0))
-        self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_time_sink_x_1, 0))
+        self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_time_sink_x_1, 1))
         self.connect((self.blocks_repeat_0, 0), (self.blocks_multiply_xx_0, 1))
-        self.connect((self.blocks_repeat_0, 0), (self.qtgui_time_sink_x_1, 1))
+        self.connect((self.blocks_repeat_0, 0), (self.qtgui_time_sink_x_1, 0))
         self.connect((self.blocks_throttle2_0_1, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.epy_block_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0, 0))

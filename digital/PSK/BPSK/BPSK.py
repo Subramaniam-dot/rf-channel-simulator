@@ -64,7 +64,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.sps = sps = 32
+        self.sps = sps = 8
         self.samp_rate = samp_rate = 32000
         self.excess_bw = excess_bw = 0.35
         self.time_offset = time_offset = 1.0001
@@ -72,9 +72,11 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(1.0,samp_rate,samp_rate/sps,excess_bw,11*sps)
         self.noise_volt = noise_volt = 0.01
         self.n_samples = n_samples = 1024
-        self.freq_offset = freq_offset = 0.001
+        self.freq_offset = freq_offset = 0.00
         self.filename = filename = "BPSK"
-        self.bpsk = bpsk = digital.constellation_bpsk().base()
+        self.delay = delay = 0
+        self.bpsk = bpsk = digital.constellation_calcdist([-1, 1], [0, 1],
+        2, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.bpsk.set_npwr(0.001)
         self.M = M = 2
 
@@ -88,9 +90,12 @@ class BPSK(gr.top_block, Qt.QWidget):
         self._noise_volt_range = qtgui.Range(0, 1, 0.01, 0.01, 200)
         self._noise_volt_win = qtgui.RangeWidget(self._noise_volt_range, self.set_noise_volt, "Channel: Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._noise_volt_win)
-        self._freq_offset_range = qtgui.Range(-0.1, 0.1, 0.001, 0.001, 200)
+        self._freq_offset_range = qtgui.Range(-0.2, 0.2, 0.001, 0.00, 200)
         self._freq_offset_win = qtgui.RangeWidget(self._freq_offset_range, self.set_freq_offset, "Channel: Frequency Offset", "eng_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_offset_win)
+        self._delay_range = qtgui.Range(0, 100, 1, 0, 200)
+        self._delay_win = qtgui.RangeWidget(self._delay_range, self.set_delay, "'delay'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._delay_win)
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -301,9 +306,13 @@ class BPSK(gr.top_block, Qt.QWidget):
             block_tags=False)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_repeat_0 = blocks.repeat(gr.sizeof_float*1, (sps*2))
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(2)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
+        self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, delay)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
-        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(0, 256, 1024))), True)
+        self.blocks_add_const_vxx_0 = blocks.add_const_ff((-0.5))
+        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(0, 256, 64))), True)
 
 
         ##################################################
@@ -312,10 +321,14 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.msg_connect((self.id_write_button_0, 'pressed'), (self.epy_block_0, 'enable_write'))
         self.connect((self.analog_random_source_x_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
         self.connect((self.analog_random_source_x_0, 0), (self.digital_constellation_modulator_0, 0))
-        self.connect((self.blocks_char_to_float_0, 0), (self.blocks_float_to_complex_0, 0))
-        self.connect((self.blocks_float_to_complex_0, 0), (self.qtgui_time_sink_x_1, 1))
+        self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.blocks_char_to_float_0, 0), (self.blocks_add_const_vxx_0, 0))
+        self.connect((self.blocks_delay_0, 0), (self.qtgui_time_sink_x_1, 0))
+        self.connect((self.blocks_float_to_complex_0, 0), (self.blocks_delay_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_repeat_0, 0))
+        self.connect((self.blocks_repeat_0, 0), (self.blocks_float_to_complex_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 1))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.epy_block_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0, 0))
@@ -338,6 +351,7 @@ class BPSK(gr.top_block, Qt.QWidget):
     def set_sps(self, sps):
         self.sps = sps
         self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
+        self.blocks_repeat_0.set_interpolation((self.sps*2))
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -404,6 +418,13 @@ class BPSK(gr.top_block, Qt.QWidget):
     def set_filename(self, filename):
         self.filename = filename
         self.epy_block_0.filename = self.filename
+
+    def get_delay(self):
+        return self.delay
+
+    def set_delay(self, delay):
+        self.delay = delay
+        self.blocks_delay_0.set_dly(int(self.delay))
 
     def get_bpsk(self):
         return self.bpsk

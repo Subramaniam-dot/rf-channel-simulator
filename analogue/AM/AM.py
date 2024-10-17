@@ -72,7 +72,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate = 48000
         self.noise_volt = noise_volt = 0.01
         self.if_rate = if_rate = 192000
-        self.freq_offset = freq_offset = 0.001
+        self.freq_offset = freq_offset = 0.00
         self.carrier_freq = carrier_freq = 5e3
 
         ##################################################
@@ -88,7 +88,7 @@ class AM(gr.top_block, Qt.QWidget):
         self._noise_volt_range = qtgui.Range(0, 1, 0.01, 0.01, 200)
         self._noise_volt_win = qtgui.RangeWidget(self._noise_volt_range, self.set_noise_volt, "Channel: Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._noise_volt_win)
-        self._freq_offset_range = qtgui.Range(-0.1, 0.1, 0.001, 0.001, 200)
+        self._freq_offset_range = qtgui.Range(-0.2, 0.2, 0.001, 0.00, 200)
         self._freq_offset_win = qtgui.RangeWidget(self._freq_offset_range, self.set_freq_offset, "Channel: Frequency Offset", "eng_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_offset_win)
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
@@ -180,12 +180,12 @@ class AM(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
             1024, #size
             samp_rate, #samp_rate
-            "", #name
-            1, #number of inputs
+            'Raw and Modulated Data', #name
+            2, #number of inputs
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
+        self.qtgui_time_sink_x_0.set_y_axis(-4, 4)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
@@ -198,7 +198,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.enable_stem_plot(False)
 
 
-        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
+        labels = ['Audio Signal', 'AM Modulated Data', 'Signal 3', 'Signal 4', 'Signal 5',
             'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
@@ -212,7 +212,7 @@ class AM(gr.top_block, Qt.QWidget):
             -1, -1, -1, -1, -1]
 
 
-        for i in range(1):
+        for i in range(2):
             if len(labels[i]) == 0:
                 self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
             else:
@@ -309,23 +309,22 @@ class AM(gr.top_block, Qt.QWidget):
                 6.76))
         self.audio_source_0 = audio.source(samp_rate, 'hw:CARD=PCH,DEV=0', True)
         self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, carrier_freq, 1, 0, 0)
-        self.analog_const_source_x_0 = analog.sig_source_f(0, analog.GR_CONST_WAVE, 0, 0, 0)
 
 
         ##################################################
         # Connections
         ##################################################
         self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_0, 'enable_write'))
-        self.connect((self.analog_const_source_x_0, 0), (self.blocks_float_to_complex_0, 1))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.audio_source_0, 0), (self.blocks_selector_0, 2))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_add_const_vxx_0, 0))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.low_pass_filter_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_multiply_xx_0, 1))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_float_to_complex_0, 0))
+        self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_time_sink_x_0, 1))
         self.connect((self.blocks_selector_0, 0), (self.band_pass_filter_0, 0))
-        self.connect((self.blocks_selector_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_selector_0, 1))

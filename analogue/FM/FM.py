@@ -71,9 +71,8 @@ class FM(gr.top_block, Qt.QWidget):
         self.taps = taps = [1.0 + 0.0j, ]
         self.samp_rate = samp_rate = 48000
         self.noise_volt = noise_volt = 0.01
-        self.if_rate = if_rate = 192000
-        self.freq_offset = freq_offset = 0.001
-        self.freq = freq = 2400000000
+        self.freq_offset = freq_offset = 0
+        self.carrier_freq = carrier_freq = 5000
 
         ##################################################
         # Blocks
@@ -88,7 +87,7 @@ class FM(gr.top_block, Qt.QWidget):
         self._noise_volt_range = qtgui.Range(0, 1, 0.01, 0.01, 200)
         self._noise_volt_win = qtgui.RangeWidget(self._noise_volt_range, self.set_noise_volt, "Channel: Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._noise_volt_win)
-        self._freq_offset_range = qtgui.Range(-0.1, 0.1, 0.001, 0.001, 200)
+        self._freq_offset_range = qtgui.Range(-0.2, 0.2, 0.001, 0, 200)
         self._freq_offset_win = qtgui.RangeWidget(self._freq_offset_range, self.set_freq_offset, "Channel: Frequency Offset", "eng_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_offset_win)
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
@@ -180,16 +179,16 @@ class FM(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
             1024, #size
             samp_rate, #samp_rate
-            "", #name
-            1, #number of inputs
+            "Raw and Modulated Data", #name
+            2, #number of inputs
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-1, 5)
+        self.qtgui_time_sink_x_0.set_y_axis(-5, 5)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
-        self.qtgui_time_sink_x_0.enable_tags(True)
+        self.qtgui_time_sink_x_0.enable_tags(False)
         self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
         self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(False)
@@ -198,7 +197,7 @@ class FM(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.enable_stem_plot(False)
 
 
-        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
+        labels = ['Audio Signal', 'FM Modulated Waveform', 'Signal 3', 'Signal 4', 'Signal 5',
             'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
@@ -212,7 +211,7 @@ class FM(gr.top_block, Qt.QWidget):
             -1, -1, -1, -1, -1]
 
 
-        for i in range(1):
+        for i in range(2):
             if len(labels[i]) == 0:
                 self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
             else:
@@ -294,6 +293,7 @@ class FM(gr.top_block, Qt.QWidget):
         self.blocks_selector_0 = blocks.selector(gr.sizeof_float*1,0,0)
         self.blocks_selector_0.set_enabled(True)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(volume)
+        self.blocks_complex_to_float_0 = blocks.complex_to_float(1)
         self.blocks_add_xx_0 = blocks.add_vff(1)
         self.band_pass_filter_0 = filter.fir_filter_fff(
             1,
@@ -309,7 +309,7 @@ class FM(gr.top_block, Qt.QWidget):
         self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, 0, 0.15, 0, 0)
         self.analog_nbfm_tx_0 = analog.nbfm_tx(
         	audio_rate=samp_rate,
-        	quad_rate=if_rate,
+        	quad_rate=(samp_rate*1),
         	tau=(75e-6),
         	max_dev=5e3,
         	fh=(-1.0),
@@ -320,14 +320,16 @@ class FM(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_0, 'enable_write'))
+        self.connect((self.analog_nbfm_tx_0, 0), (self.blocks_complex_to_float_0, 0))
         self.connect((self.analog_nbfm_tx_0, 0), (self.low_pass_filter_0, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.audio_source_0, 0), (self.blocks_selector_0, 2))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.blocks_add_xx_0, 0), (self.analog_nbfm_tx_0, 0))
+        self.connect((self.blocks_complex_to_float_0, 0), (self.qtgui_time_sink_x_0, 1))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_selector_0, 0), (self.band_pass_filter_0, 0))
-        self.connect((self.blocks_selector_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_add_xx_0, 0))
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_selector_0, 1))
@@ -388,12 +390,6 @@ class FM(gr.top_block, Qt.QWidget):
         self.noise_volt = noise_volt
         self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
 
-    def get_if_rate(self):
-        return self.if_rate
-
-    def set_if_rate(self, if_rate):
-        self.if_rate = if_rate
-
     def get_freq_offset(self):
         return self.freq_offset
 
@@ -401,11 +397,11 @@ class FM(gr.top_block, Qt.QWidget):
         self.freq_offset = freq_offset
         self.channels_channel_model_0.set_frequency_offset(self.freq_offset)
 
-    def get_freq(self):
-        return self.freq
+    def get_carrier_freq(self):
+        return self.carrier_freq
 
-    def set_freq(self, freq):
-        self.freq = freq
+    def set_carrier_freq(self, carrier_freq):
+        self.carrier_freq = carrier_freq
 
 
 

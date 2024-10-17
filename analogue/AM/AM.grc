@@ -229,7 +229,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [592, 380.0]
+    coordinate: [544, 380.0]
     rotation: 0
     state: true
 - name: blocks_add_const_vxx_0
@@ -400,7 +400,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 672.0]
+    coordinate: [424, 800.0]
     rotation: 0
     state: enabled
 - name: epy_block_0
@@ -442,7 +442,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [768, 856.0]
+    coordinate: [808, 984.0]
     rotation: 0
     state: enabled
 - name: id_write_button
@@ -460,7 +460,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [432, 952.0]
+    coordinate: [360, 1000.0]
     rotation: 0
     state: enabled
 - name: low_pass_filter_0_0
@@ -484,7 +484,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [184, 660.0]
+    coordinate: [224, 788.0]
     rotation: 0
     state: enabled
 - name: qtgui_freq_sink_x_0
@@ -565,7 +565,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 536.0]
+    coordinate: [928, 664.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -600,9 +600,9 @@ blocks:
     entags: 'True'
     grid: 'False'
     gui_hint: ''
-    label1: Signal 1
+    label1: Audio Signal
     label10: Signal 10
-    label2: Signal 2
+    label2: AM Modulated Data
     label3: Signal 3
     label4: Signal 4
     label5: Signal 5
@@ -621,8 +621,8 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '""'
-    nconnections: '1'
+    name: Raw and Modulated Data
+    nconnections: '2'
     size: '1024'
     srate: samp_rate
     stemplot: 'False'
@@ -655,14 +655,14 @@ blocks:
     width8: '1'
     width9: '1'
     ylabel: Amplitude
-    ymax: '1'
-    ymin: '-1'
+    ymax: '4'
+    ymin: '-4'
     yunit: '""'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [520, 248.0]
+    coordinate: [1200, 504.0]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0_0
@@ -759,7 +759,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 648.0]
+    coordinate: [768, 776.0]
     rotation: 0
     state: enabled
 - name: qtgui_waterfall_sink_x_0
@@ -820,7 +820,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 736.0]
+    coordinate: [768, 864.0]
     rotation: 0
     state: enabled
 - name: virtual_sink_0
@@ -846,7 +846,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 688.0]
+    coordinate: [64, 816.0]
     rotation: 0
     state: enabled
 
@@ -857,9 +857,10 @@ connections:
 - [blocks_add_const_vxx_0, '0', blocks_multiply_const_vxx_0, '0']
 - [blocks_float_to_complex_0, '0', virtual_sink_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_multiply_xx_0, '1']
+- [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_multiply_xx_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_multiply_xx_0, '0', qtgui_time_sink_x_0, '1']
 - [blocks_selector_0, '0', band_pass_filter_0, '0']
-- [blocks_selector_0, '0', qtgui_time_sink_x_0, '0']
 - [blocks_throttle2_0, '0', blocks_multiply_xx_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_selector_0, '0']
 - [blocks_wavfile_source_0_0, '0', blocks_selector_0, '1']

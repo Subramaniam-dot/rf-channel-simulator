@@ -619,9 +619,9 @@ blocks:
     entags: 'False'
     grid: 'False'
     gui_hint: ''
-    label1: Signal 1
+    label1: Digital Data
     label10: Signal 10
-    label2: Signal 2
+    label2: OOK Modulated Waveform
     label3: Signal 3
     label4: Signal 4
     label5: Signal 5
@@ -640,7 +640,7 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '""'
+    name: Raw and Modulated Data
     nconnections: '2'
     size: '1024'
     srate: samp_rate
@@ -681,7 +681,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 592.0]
+    coordinate: [792, 600.0]
     rotation: 0
     state: enabled
 - name: qtgui_waterfall_sink_x_0
@@ -753,9 +753,9 @@ connections:
 - [blocks_char_to_float_0, '0', blocks_repeat_0, '0']
 - [blocks_float_to_complex_0, '0', channels_channel_model_0, '0']
 - [blocks_multiply_xx_0, '0', blocks_float_to_complex_0, '0']
-- [blocks_multiply_xx_0, '0', qtgui_time_sink_x_1, '0']
+- [blocks_multiply_xx_0, '0', qtgui_time_sink_x_1, '1']
 - [blocks_repeat_0, '0', blocks_multiply_xx_0, '1']
-- [blocks_repeat_0, '0', qtgui_time_sink_x_1, '1']
+- [blocks_repeat_0, '0', qtgui_time_sink_x_1, '0']
 - [blocks_throttle2_0_1, '0', blocks_multiply_xx_0, '0']
 - [channels_channel_model_0, '0', epy_block_0, '0']
 - [channels_channel_model_0, '0', qtgui_freq_sink_x_0, '0']
