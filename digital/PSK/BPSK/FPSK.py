@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: BPSK
+# Title: FSK
 # GNU Radio version: 3.10.9.2
 
 from PyQt5 import Qt
@@ -16,7 +16,6 @@ import numpy
 from gnuradio import channels
 from gnuradio.filter import firdes
 from gnuradio import digital
-from gnuradio import filter
 from gnuradio import gr
 from gnuradio.fft import window
 import sys
@@ -25,17 +24,17 @@ from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-import BPSK_epy_block_0 as epy_block_0  # embedded python block
+import FPSK_epy_block_0 as epy_block_0  # embedded python block
 import sip
 
 
 
-class BPSK(gr.top_block, Qt.QWidget):
+class FPSK(gr.top_block, Qt.QWidget):
 
     def __init__(self):
-        gr.top_block.__init__(self, "BPSK", catch_exceptions=True)
+        gr.top_block.__init__(self, "FSK", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("BPSK")
+        self.setWindowTitle("FSK")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -53,7 +52,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("GNU Radio", "BPSK")
+        self.settings = Qt.QSettings("GNU Radio", "FPSK")
 
         try:
             geometry = self.settings.value("geometry")
@@ -74,7 +73,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.noise_volt = noise_volt = 0.01
         self.n_samples = n_samples = 1024
         self.freq_offset = freq_offset = 0.00
-        self.filename = filename = "BPSK"
+        self.filename = filename = "FSK"
         self.bpsk = bpsk = digital.constellation_bpsk().base()
         self.bpsk.set_npwr(0.000)
         self.M = M = 2
@@ -92,14 +91,6 @@ class BPSK(gr.top_block, Qt.QWidget):
         self._freq_offset_range = qtgui.Range(-0.2, 0.2, 0.001, 0.00, 200)
         self._freq_offset_win = qtgui.RangeWidget(self._freq_offset_range, self.set_freq_offset, "Channel: Frequency Offset", "eng_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_offset_win)
-        self.root_raised_cosine_filter_0 = filter.fir_filter_ccf(
-            1,
-            firdes.root_raised_cosine(
-                1,
-                samp_rate,
-                (samp_rate/sps*2),
-                0.35,
-                100))
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -139,7 +130,7 @@ class BPSK(gr.top_block, Qt.QWidget):
             1024, #size
             samp_rate, #samp_rate
             "", #name
-            3, #number of inputs
+            2, #number of inputs
             None # parent
         )
         self.qtgui_time_sink_x_1.set_update_time(0.10)
@@ -170,7 +161,7 @@ class BPSK(gr.top_block, Qt.QWidget):
             -1, -1, -1, -1, -1]
 
 
-        for i in range(6):
+        for i in range(4):
             if len(labels[i]) == 0:
                 if (i % 2 == 0):
                     self.qtgui_time_sink_x_1.set_line_label(i, "Re{{Data {0}}}".format(i/2))
@@ -287,70 +278,11 @@ class BPSK(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_eye_sink_x_0 = qtgui.eye_sink_c(
-            4096, #size
-            samp_rate, #samp_rate
-            1, #number of inputs
-            None
-        )
-        self.qtgui_eye_sink_x_0.set_update_time(0.10)
-        self.qtgui_eye_sink_x_0.set_samp_per_symbol(sps)
-        self.qtgui_eye_sink_x_0.set_y_axis(-1, 1)
-
-        self.qtgui_eye_sink_x_0.set_y_label('Amplitude', "")
-
-        self.qtgui_eye_sink_x_0.enable_tags(True)
-        self.qtgui_eye_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_eye_sink_x_0.enable_autoscale(False)
-        self.qtgui_eye_sink_x_0.enable_grid(False)
-        self.qtgui_eye_sink_x_0.enable_axis_labels(True)
-        self.qtgui_eye_sink_x_0.enable_control_panel(False)
-
-
-        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
-            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ['blue', 'blue', 'blue', 'blue', 'blue',
-            'blue', 'blue', 'blue', 'blue', 'blue']
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-        styles = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1]
-
-
-        for i in range(2):
-            if len(labels[i]) == 0:
-                if (i % 2 == 0):
-                    self.qtgui_eye_sink_x_0.set_line_label(i, "Eye [Re{{Data {0}}}]".format(round(i/2)))
-                else:
-                    self.qtgui_eye_sink_x_0.set_line_label(i, "Eye [Im{{Data {0}}}]".format(round((i-1)/2)))
-            else:
-                self.qtgui_eye_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_eye_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_eye_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_eye_sink_x_0.set_line_style(i, styles[i])
-            self.qtgui_eye_sink_x_0.set_line_marker(i, markers[i])
-            self.qtgui_eye_sink_x_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_eye_sink_x_0_win = sip.wrapinstance(self.qtgui_eye_sink_x_0.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_eye_sink_x_0_win)
         self.id_write_button_0 = _id_write_button_0_toggle_button = qtgui.MsgPushButton('write', 'pressed',1,"default","default")
         self.id_write_button_0 = _id_write_button_0_toggle_button
 
         self.top_layout.addWidget(_id_write_button_0_toggle_button)
         self.epy_block_0 = epy_block_0.custom_file_writer(filename=filename, num_samples=n_samples)
-        self.digital_constellation_modulator_0 = digital.generic_mod(
-            constellation=bpsk,
-            differential=True,
-            samples_per_symbol=sps,
-            pre_diff_code=True,
-            excess_bw=excess_bw,
-            verbose=False,
-            log=False,
-            truncate=False)
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=noise_volt,
             frequency_offset=freq_offset,
@@ -358,6 +290,7 @@ class BPSK(gr.top_block, Qt.QWidget):
             taps=taps,
             noise_seed=0,
             block_tags=False)
+        self.blocks_vco_c_0 = blocks.vco_c(samp_rate, (2*3.14*samp_rate/sps*2), 1)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_repeat_0 = blocks.repeat(gr.sizeof_float*1, sps)
@@ -365,7 +298,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
         self.blocks_add_const_vxx_0 = blocks.add_const_ff((-0.5))
-        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(127, 128, 1000))), True)
+        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(51, 52, 1000))), True)
 
 
         ##################################################
@@ -373,27 +306,24 @@ class BPSK(gr.top_block, Qt.QWidget):
         ##################################################
         self.msg_connect((self.id_write_button_0, 'pressed'), (self.epy_block_0, 'enable_write'))
         self.connect((self.analog_random_source_x_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
-        self.connect((self.analog_random_source_x_0, 0), (self.digital_constellation_modulator_0, 0))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
-        self.connect((self.blocks_char_to_float_0, 0), (self.blocks_add_const_vxx_0, 0))
+        self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_vco_c_0, 0))
+        self.connect((self.blocks_char_to_float_0, 0), (self.blocks_repeat_0, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.qtgui_time_sink_x_1, 0))
-        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_repeat_0, 0))
-        self.connect((self.blocks_repeat_0, 0), (self.blocks_float_to_complex_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_float_to_complex_0, 0))
+        self.connect((self.blocks_repeat_0, 0), (self.blocks_add_const_vxx_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.qtgui_eye_sink_x_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 1))
-        self.connect((self.blocks_throttle2_0, 0), (self.root_raised_cosine_filter_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
+        self.connect((self.blocks_vco_c_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.epy_block_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
-        self.connect((self.digital_constellation_modulator_0, 0), (self.blocks_throttle2_0, 0))
-        self.connect((self.root_raised_cosine_filter_0, 0), (self.qtgui_time_sink_x_1, 2))
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("GNU Radio", "BPSK")
+        self.settings = Qt.QSettings("GNU Radio", "FPSK")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -407,8 +337,6 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.sps = sps
         self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
         self.blocks_repeat_0.set_interpolation(self.sps)
-        self.qtgui_eye_sink_x_0.set_samp_per_symbol(self.sps)
-        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, (self.samp_rate/self.sps*2), 0.35, 100))
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -417,12 +345,10 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate
         self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
         self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
-        self.qtgui_eye_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
         self.qtgui_waterfall_sink_x_0.set_frequency_range(0, self.samp_rate)
-        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, (self.samp_rate/self.sps*2), 0.35, 100))
 
     def get_excess_bw(self):
         return self.excess_bw
@@ -493,7 +419,7 @@ class BPSK(gr.top_block, Qt.QWidget):
 
 
 
-def main(top_block_cls=BPSK, options=None):
+def main(top_block_cls=FPSK, options=None):
 
     qapp = Qt.QApplication(sys.argv)
 
