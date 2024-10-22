@@ -1,0 +1,32 @@
+id: custom_file_writer
+label: Custom File Writer
+category: Custom
+flags: qt, python
+file_format: 1
+
+inputs:
+  - dtype: complex
+    vlen: 1
+
+outputs: []
+
+parameters:
+  - id: filename
+    label: Filename Prefix
+    default: '"output.dat"'
+
+  - id: num_samples
+    label: Number of Samples per File
+    default: 1024
+
+  - id: modulation_scheme
+    label: Modulation Scheme
+    default: '"BPSK"'
+
+  - id: snr
+    label: Signal to Noise Ratio (dB)
+    default: 10.0
+
+  - id: freq_offset
+    label: Frequency Offset
+    default: 0.0
