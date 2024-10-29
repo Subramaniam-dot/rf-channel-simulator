@@ -98,62 +98,73 @@ check_system_requirements() {
     fi
 }
 
-# Function to install dependencies
-install_dependencies() {
-    log_message "Installing and verifying dependencies..."
-    
-    # Update package list
-    sudo apt-get update || handle_error "Failed to update package list"
-    
-    # Required packages
-    local packages=(
-        cmake
-        build-essential
-        libboost-all-dev
-        libgmp-dev
-        swig
-        python3-numpy
-        python3-mako
-        python3-sphinx
-        python3-lxml
-        python3-yaml
-        python3-click
-        python3-click-plugins
-        python3-zmq
-        python3-scipy
-        python3-gi
-        python3-gi-cairo
-        gir1.2-gtk-3.0
-        libvolk2-dev
-        libfftw3-dev
-        libgsl-dev
-        libcppunit-dev
-        doxygen
-        pkg-config
-    )
-    
-    # Install packages
-    for package in "${packages[@]}"; do
-        if ! dpkg -l | grep -q "^ii  $package"; then
-            log_message "Installing $package..."
-            sudo apt-get install -y "$package" || handle_error "Failed to install $package"
-        fi
-    done
-    
-    # Verify GNU Radio installation
-    if ! command -v gnuradio-companion >/dev/null 2>&1; then
-        log_message "Installing GNU Radio..."
-        sudo apt-get install -y gnuradio || handle_error "Failed to install GNU Radio"
-    fi
-    
-    # Verify gr_modtool
-    if ! command -v gr_modtool >/dev/null 2>&1; then
-        handle_error "gr_modtool not found after installing GNU Radio"
-    fi
-    
-    log_success "All dependencies installed successfully"
-}
+# Update just the packages list in the install_dependencies function:
 
+    install_dependencies() {
+        log_message "Installing and verifying dependencies..."
+        
+        # Update package list
+        sudo apt-get update || handle_error "Failed to update package list"
+        
+        # Required packages - Updated VOLK package name
+        local packages=(
+            cmake
+            build-essential
+            libboost-all-dev
+            libgmp-dev
+            swig
+            python3-numpy
+            python3-mako
+            python3-sphinx
+            python3-lxml
+            python3-yaml
+            python3-click
+            python3-click-plugins
+            python3-zmq
+            python3-scipy
+            python3-gi
+            python3-gi-cairo
+            gir1.2-gtk-3.0
+            libvolk-dev        # Changed from libvolk2-dev to libvolk-dev
+            libfftw3-dev
+            libgsl-dev
+            libcppunit-dev
+            doxygen
+            pkg-config
+        )
+        
+        # Install packages
+        for package in "${packages[@]}"; do
+            if ! dpkg -l | grep -q "^ii  $package"; then
+                log_message "Installing $package..."
+                sudo apt-get install -y "$package" || handle_error "Failed to install $package"
+            fi
+        done
+        
+        # After installing VOLK, ensure ldconfig is run
+        sudo ldconfig
+        
+        # Verify GNU Radio installation
+        if ! command -v gnuradio-companion >/dev/null 2>&1; then
+            log_message "Installing GNU Radio..."
+            sudo apt-get install -y gnuradio || handle_error "Failed to install GNU Radio"
+        fi
+        
+        # Verify gr_modtool
+        if ! command -v gr_modtool >/dev/null 2>&1; then
+            handle_error "gr_modtool not found after installing GNU Radio"
+        fi
+        
+        log_success "All dependencies installed successfully"
+        
+        # Verify VOLK installation
+        if ldconfig -p | grep -q libvolk; then
+            log_success "VOLK library installed successfully"
+        else
+            handle_error "VOLK library installation failed"
+        fi
+    }
+    
 # Function to set up Python environment
 setup_python_environment() {
     log_message "Setting up Python environment..."
