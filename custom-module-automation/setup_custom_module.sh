@@ -226,13 +226,13 @@ verify_installation() {
     if [ ! -f "$PYTHON_PATH/$BLOCK_NAME.py" ]; then
         echo "Warning: Python block file not found at $PYTHON_PATH/$BLOCK_NAME.py"
         return 1
-    }
+    
     
     # Check if YAML file exists
     if [ ! -f "$GRC_PATH/${MODULE_NAME}_${BLOCK_NAME}.block.yml" ]; then
         echo "Warning: YAML block file not found at $GRC_PATH/${MODULE_NAME}_${BLOCK_NAME}.block.yml"
         return 1
-    }
+    
     
     echo "Installation verified successfully!"
     return 0
