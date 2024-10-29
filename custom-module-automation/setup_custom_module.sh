@@ -164,7 +164,7 @@ check_system_requirements() {
             handle_error "VOLK library installation failed"
         fi
     }
-    
+
 # Function to set up Python environment
 setup_python_environment() {
     log_message "Setting up Python environment..."
@@ -366,7 +366,7 @@ main() {
     # Run all steps
     check_root
     check_system_requirements
-    install_dependencies
+    # install_dependencies
     setup_python_environment
     create_or_backup_module
     add_block
