@@ -99,39 +99,53 @@ launch_grc() {
     mkdir -p "$TEST_DIR"
     
     cat > "$TEST_DIR/test_${MODULE_NAME}.grc" << EOL
-options:
-  parameters:
-    author: ''
-    catch_exceptions: 'True'
-    category: '[GRC Hier Blocks]'
-    cmake_opt: ''
-    comment: ''
-    copyright: ''
-    description: ''
-    gen_cmake: 'On'
-    gen_linking: dynamic
-    generate_options: qt_gui
-    hier_block_src_path: '.:'
-    id: test_${MODULE_NAME}
-    max_nouts: '0'
-    output_language: python
-    placement: (0,0)
-    qt_qss_theme: ''
-    realtime_scheduling: ''
-    run: 'True'
-    run_command: '{python} -u {filename}'
-    run_options: prompt
-    sizing_mode: fixed
-    thread_safe_setters: ''
-    title: Test ${MODULE_NAME}
-    window_size: (1000,1000)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [8, 8]
-    rotation: 0
-    state: enabled
+{
+  "metadata": {
+    "version": "3.10.7.0",
+    "file_format": 1
+  },
+  "options": {
+    "parameters": {
+      "author": "",
+      "catch_exceptions": "True",
+      "category": "[GRC Hier Blocks]",
+      "cmake_opt": "",
+      "comment": "",
+      "copyright": "",
+      "description": "",
+      "gen_cmake": "On",
+      "gen_linking": "dynamic",
+      "generate_options": "qt_gui",
+      "hier_block_src_path": ".:",
+      "id": "test_${MODULE_NAME}",
+      "max_nouts": "0",
+      "output_language": "python",
+      "placement": [
+        "0",
+        "0"
+      ],
+      "qt_qss_theme": "",
+      "realtime_scheduling": "",
+      "run": "True",
+      "run_command": "{python} -u {filename}",
+      "run_options": "prompt",
+      "sizing_mode": "fixed",
+      "thread_safe_setters": "",
+      "title": "Test ${MODULE_NAME}"
+    },
+    "states": {
+      "bus_sink": false,
+      "bus_source": false,
+      "bus_structure": null,
+      "coordinate": [
+        8,
+        8
+      ],
+      "rotation": 0,
+      "state": "enabled"
+    }
+  }
+}
 EOL
 
     echo "Created test flowgraph at: $TEST_DIR/test_${MODULE_NAME}.grc"
