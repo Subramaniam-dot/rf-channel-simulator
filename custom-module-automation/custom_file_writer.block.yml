@@ -1,32 +1,55 @@
 id: custom_file_writer
 label: Custom File Writer
 category: Custom
-flags: qt, python
+flags: [ python ]
 file_format: 1
 
+parameters:
+-   id: filename
+    label: Filename Prefix
+    dtype: string
+    default: 'output.dat'
+-   id: num_samples
+    label: Number of Samples per File
+    dtype: int
+    default: 1024
+-   id: modulation_scheme
+    label: Modulation Scheme
+    dtype: string
+    default: 'BPSK'
+-   id: snr
+    label: Signal to Noise Ratio (dB)
+    dtype: float
+    default: 10.0
+-   id: freq_offset
+    label: Frequency Offset (Hz)
+    dtype: float
+    default: 0.0
+
 inputs:
-  - dtype: complex
+-   domain: stream
+    dtype: complex
     vlen: 1
+    optional: false
 
 outputs: []
 
-parameters:
-  - id: filename
-    label: Filename Prefix
-    default: '"output.dat"'
+templates:
+    imports: from gnuradio.custom import custom_file_writer
+    make: custom_file_writer(${filename}, ${num_samples}, ${modulation_scheme}, ${snr}, ${freq_offset})
 
-  - id: num_samples
-    label: Number of Samples per File
-    default: 1024
+documentation: |-
+    Custom File Writer Block
+    
+    Writes complex samples to binary files with accompanying metadata.
+    Creates numbered output files with the specified prefix.
+    Each file contains the specified number of samples.
+    
+    Parameters:
+    filename - Base filename prefix for output files
+    num_samples - Number of samples to write per file
+    modulation_scheme - Modulation scheme identifier
+    snr - Signal to noise ratio in dB
+    freq_offset - Frequency offset in Hz
 
-  - id: modulation_scheme
-    label: Modulation Scheme
-    default: '"BPSK"'
-
-  - id: snr
-    label: Signal to Noise Ratio (dB)
-    default: 10.0
-
-  - id: freq_offset
-    label: Frequency Offset
-    default: 0.0
+file_format: 1
