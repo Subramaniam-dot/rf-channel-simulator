@@ -72,7 +72,7 @@ class OOK(gr.top_block, Qt.QWidget):
         self.n_samples = n_samples = 1024
         self.freq_offset = freq_offset = 0.00
         self.filename = filename = "OOK"
-        self.M = M = 4
+        self.M = M = 2
 
         ##################################################
         # Blocks

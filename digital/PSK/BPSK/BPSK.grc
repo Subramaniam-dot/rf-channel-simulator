@@ -239,9 +239,9 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    max: '128'
+    max: '256'
     maxoutbuf: '0'
-    min: '127'
+    min: '0'
     minoutbuf: '0'
     num_samps: '1000'
     repeat: 'True'
@@ -450,9 +450,27 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 400.0]
+    coordinate: [712, 368.0]
     rotation: 0
     state: enabled
+- name: custom_file_writer_0
+  id: custom_file_writer
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    filename: '"output.dat"'
+    freq_offset: '0.0'
+    modulation_scheme: '"BPSK"'
+    num_samples: '1024'
+    snr: '10.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1008, 776.0]
+    rotation: 0
+    state: disabled
 - name: digital_constellation_modulator_0
   id: digital_constellation_modulator
   parameters:
@@ -514,7 +532,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1000, 664.0]
+    coordinate: [1040, 672.0]
     rotation: 0
     state: enabled
 - name: id_write_button_0
@@ -1083,6 +1101,7 @@ connections:
 - [blocks_uchar_to_float_0, '0', blocks_add_const_vxx_0, '0']
 - [blocks_unpack_k_bits_bb_0, '0', blocks_char_to_float_0, '0']
 - [blocks_unpack_k_bits_bb_0, '0', blocks_uchar_to_float_0, '0']
+- [channels_channel_model_0, '0', custom_file_writer_0, '0']
 - [channels_channel_model_0, '0', epy_block_0, '0']
 - [channels_channel_model_0, '0', qtgui_freq_sink_x_0, '0']
 - [channels_channel_model_0, '0', qtgui_time_sink_x_0, '0']
