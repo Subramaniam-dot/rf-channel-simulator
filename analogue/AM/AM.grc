@@ -58,7 +58,7 @@ blocks:
     step: '0.001'
     stop: '0.2'
     value: '0.00'
-    widget: eng_slider
+    widget: counter_slider
   states:
     bus_sink: false
     bus_source: false
@@ -194,7 +194,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    device_name: hw:CARD=PCH,DEV=0
+    device_name: hw:CARD=Generic_1,DEV=0
     maxoutbuf: '0'
     minoutbuf: '0'
     num_outputs: '1'
@@ -403,6 +403,24 @@ blocks:
     coordinate: [424, 800.0]
     rotation: 0
     state: enabled
+- name: custom_file_writer_1
+  id: custom_file_writer
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    filename: output
+    freq_offset: '0.0'
+    modulation_scheme: BPSK
+    num_samples: '1024'
+    snr: '10.0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [744, 1068.0]
+    rotation: 0
+    state: true
 - name: epy_block_0
   id: epy_block
   parameters:
@@ -442,9 +460,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [808, 984.0]
+    coordinate: [736, 976.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: id_write_button
   id: variable_qtgui_msg_push_button
   parameters:
@@ -462,7 +480,7 @@ blocks:
     bus_structure: null
     coordinate: [360, 1000.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: low_pass_filter_0_0
   id: low_pass_filter
   parameters:
@@ -864,6 +882,7 @@ connections:
 - [blocks_throttle2_0, '0', blocks_multiply_xx_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_selector_0, '0']
 - [blocks_wavfile_source_0_0, '0', blocks_selector_0, '1']
+- [channels_channel_model_0_0, '0', custom_file_writer_1, '0']
 - [channels_channel_model_0_0, '0', epy_block_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_freq_sink_x_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_time_sink_x_0_0, '0']
@@ -874,4 +893,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.9.2
+  grc_version: 3.10.7.0

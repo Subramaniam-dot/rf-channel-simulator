@@ -121,24 +121,25 @@ setup_python_environment() {
         fi
     done
     
-    # Set up PYTHONPATH
-    local site_packages=$(python3 -c "import site; print(site.getsitepackages()[0])")
+    # Set up PYTHONPATH for GNU Radio modules
+    local gnuradio_path="$PREFIX/lib/python3/dist-packages"
+    sudo mkdir -p "$gnuradio_path"
     
     # Create module directory if it doesn't exist
     sudo mkdir -p "$PYTHON_DIR"
     sudo chown $USER:$USER "$PYTHON_DIR"
     
-    # Add Python path to bashrc if not already present
-    if ! grep -q "PYTHONPATH.*$PYTHON_DIR" ~/.bashrc; then
-        echo "export PYTHONPATH=$PYTHON_DIR:\$PYTHONPATH" >> ~/.bashrc
+    # Add GNU Radio Python path to bashrc if not already present
+    if ! grep -q "PYTHONPATH.*$gnuradio_path" ~/.bashrc; then
+        echo "export PYTHONPATH=$gnuradio_path:\$PYTHONPATH" >> ~/.bashrc
         source ~/.bashrc
-        log_success "Added PYTHONPATH to ~/.bashrc"
+        log_success "Added GNU Radio PYTHONPATH to ~/.bashrc"
     fi
     
-    # Create symbolic link for development
-    if [ ! -L "$site_packages/$MODULE_NAME" ]; then
-        sudo ln -sf "$PYTHON_DIR" "$site_packages/$MODULE_NAME"
-        log_success "Created symbolic link for module development"
+    # Create symbolic link in GNU Radio Python path
+    if [ ! -L "$gnuradio_path/$MODULE_NAME" ]; then
+        sudo ln -sf "$PYTHON_DIR" "$gnuradio_path/$MODULE_NAME"
+        log_success "Created symbolic link for GNU Radio module"
     fi
     
     # Verify Python environment
@@ -147,6 +148,37 @@ setup_python_environment() {
         handle_error "Failed to verify Python packages"
     
     log_success "Python environment setup completed"
+}
+
+fix_python_import() {
+    log_message "Fixing Python import issues..."
+    
+    # Use GNU Radio Python path
+    local gnuradio_path="$PREFIX/lib/python3/dist-packages"
+    
+    # Ensure GNU Radio Python directory exists
+    sudo mkdir -p "$gnuradio_path"
+    
+    # Create symbolic link if it doesn't exist
+    if [ ! -L "$gnuradio_path/$MODULE_NAME" ]; then
+        sudo ln -sf "$PYTHON_DIR" "$gnuradio_path/$MODULE_NAME"
+    fi
+    
+    # Create .pth file in GNU Radio Python path
+    echo "$PYTHON_DIR" | sudo tee "$gnuradio_path/${MODULE_NAME}.pth" > /dev/null
+    
+    # Rebuild Python cache
+    sudo python3 -m compileall "$PYTHON_DIR"
+    sudo python3 -m compileall "$gnuradio_path/$MODULE_NAME"
+    
+    # Update GRC path
+    mkdir -p ~/.gnuradio
+    if ! grep -q "$GRC_DIR" ~/.gnuradio/config.conf 2>/dev/null; then
+        echo "[grc]
+local_blocks_path = $GRC_DIR" > ~/.gnuradio/config.conf
+    fi
+    
+    log_success "Python import fixes applied"
 }
 
 # Also update the install_dependencies function to include additional Python packages:
@@ -179,7 +211,7 @@ install_dependencies() {
         python3-six
         python3-pip
         gir1.2-gtk-3.0
-        libvolk-dev
+        libvolk2-dev
         libfftw3-dev
         libgsl-dev
         libcppunit-dev
@@ -339,21 +371,7 @@ verify_installation() {
     done
 }
 
-# Function to fix Python import issues
-fix_python_import() {
-    log_message "Fixing Python import issues..."
-    
-    # Update Python path
-    local site_packages=$(python3 -c "import site; print(site.getsitepackages()[0])")
-    
-    # Create .pth file
-    echo "$PYTHON_DIR" | sudo tee "$site_packages/${MODULE_NAME}.pth" > /dev/null
-    
-    # Rebuild Python cache
-    sudo python3 -m compileall "$PYTHON_DIR"
-    
-    log_success "Python import fixes applied"
-}
+
 
 # Function to update GRC
 update_grc() {
