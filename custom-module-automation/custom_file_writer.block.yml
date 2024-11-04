@@ -1,55 +1,78 @@
 id: custom_file_writer
 label: Custom File Writer
-category: Custom
-flags: [ python ]
-file_format: 1
+category: '[Custom]'
+flags: [ python, throttle ]
 
 parameters:
 -   id: filename
-    label: Filename Prefix
+    label: Base Filename
     dtype: string
-    default: 'output.dat'
+    default: 'output'
 -   id: num_samples
-    label: Number of Samples per File
+    label: Samples per File
     dtype: int
     default: 1024
 -   id: modulation_scheme
-    label: Modulation Scheme
-    dtype: string
+    label: Modulation
+    dtype: enum
+    options: [BPSK, QPSK, QAM16, QAM64]
+    option_labels: [BPSK, QPSK, 16-QAM, 64-QAM]
     default: 'BPSK'
 -   id: snr
-    label: Signal to Noise Ratio (dB)
+    label: SNR (dB)
     dtype: float
     default: 10.0
 -   id: freq_offset
-    label: Frequency Offset (Hz)
+    label: Freq Offset (Hz)
     dtype: float
     default: 0.0
+-   id: auto_write
+    label: Auto Write
+    dtype: bool
+    default: 'True'
+-   id: output_dir
+    label: Output Directory
+    dtype: string
+    default: './data'
 
 inputs:
 -   domain: stream
     dtype: complex
     vlen: 1
-    optional: false
 
 outputs: []
 
 templates:
     imports: from customModule import custom_file_writer
-    make: custom_file_writer(${filename}, ${num_samples}, ${modulation_scheme}, ${snr}, ${freq_offset})
+    make: custom_file_writer(
+        filename=${filename},
+        num_samples=${num_samples},
+        modulation_scheme=${modulation_scheme},
+        snr=${snr},
+        freq_offset=${freq_offset},
+        auto_write=${auto_write},
+        output_dir=${output_dir}
+    )
 
 documentation: |-
-    Custom File Writer Block
+    Custom File Writer Block with Enhanced Controls
     
-    Writes complex samples to binary files with accompanying metadata.
-    Creates numbered output files with the specified prefix.
-    Each file contains the specified number of samples.
+    Writes complex samples to binary files with metadata.
+    Features:
+    - Controllable writing through GUI
+    - Automatic or manual write trigger
+    - Status messages
+    - Configurable output directory
+    - Enhanced metadata
+    - Signal statistics in log
     
     Parameters:
-    filename - Base filename prefix for output files
-    num_samples - Number of samples to write per file
-    modulation_scheme - Modulation scheme identifier
-    snr - Signal to noise ratio in dB
-    freq_offset - Frequency offset in Hz
+    filename - Base name for output files
+    num_samples - Samples per file
+    modulation_scheme - Signal modulation type
+    snr - Signal to noise ratio (dB)
+    freq_offset - Frequency offset (Hz)
+    auto_write - Enable automatic writing
+    output_dir - Directory for output files
 
 file_format: 1
