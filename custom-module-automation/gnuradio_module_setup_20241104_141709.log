@@ -1,0 +1,254 @@
+[2024-11-04 14:17:09] Starting GNU Radio module setup and verification process
+[2024-11-04 14:17:09] Log file created at: gnuradio_module_setup_20241104_141709.log
+[2024-11-04 14:17:09] Script directory: /home/subramaniam/PhD/rf-channel-simulator/custom-module-automation
+[2024-11-04 14:17:09] Module name: customModule
+[2024-11-04 14:17:09] Block name: custom_file_writer
+[2024-11-04 14:17:09] Checking system requirements...
+[2024-11-04 14:17:09] Checking system requirements...
+[0;32m[1m[✓][0m Python version: 3.10.12
+[0;32m[1m[✓][0m Python version: 3.10.12
+[0;32m[1m[✓][0m Available system memory: 5867MB
+[0;32m[1m[✓][0m Available system memory: 5867MB
+[0;32m[1m[✓][0m Available disk space: 79999MB
+[0;32m[1m[✓][0m Available disk space: 79999MB
+[2024-11-04 14:17:09] Installing and verifying dependencies...
+[2024-11-04 14:17:09] Installing and verifying dependencies...
+Hit:1 http://gb.archive.ubuntu.com/ubuntu jammy InRelease
+Hit:2 http://gb.archive.ubuntu.com/ubuntu jammy-updates InRelease
+Hit:3 http://gb.archive.ubuntu.com/ubuntu jammy-backports InRelease
+Hit:4 http://security.ubuntu.com/ubuntu jammy-security InRelease
+Hit:5 http://ppa.launchpad.net/git-core/ppa/ubuntu jammy InRelease
+Hit:6 https://dl.google.com/linux/chrome/deb stable InRelease
+Hit:7 https://download.docker.com/linux/ubuntu jammy InRelease
+Hit:8 https://packages.microsoft.com/repos/ms-teams stable InRelease
+Hit:9 https://esm.ubuntu.com/apps/ubuntu jammy-apps-security InRelease
+Hit:10 https://ppa.launchpadcontent.net/git-core/ppa/ubuntu jammy InRelease
+Hit:11 https://esm.ubuntu.com/apps/ubuntu jammy-apps-updates InRelease
+Hit:12 https://ppa.launchpadcontent.net/gnuradio/gnuradio-releases/ubuntu jammy InRelease
+Hit:13 https://repo.radeon.com/amdgpu/5.4.3/ubuntu jammy InRelease
+Hit:14 https://ppa.launchpadcontent.net/touchegg/stable/ubuntu jammy InRelease
+Hit:15 https://esm.ubuntu.com/infra/ubuntu jammy-infra-security InRelease
+Hit:16 https://esm.ubuntu.com/infra/ubuntu jammy-infra-updates InRelease
+Hit:17 https://ppa.launchpadcontent.net/umang/indicator-stickynotes/ubuntu jammy InRelease
+Hit:18 https://repo.radeon.com/rocm/apt/5.4.3 jammy InRelease
+Hit:19 https://linux.teamviewer.com/deb stable InRelease
+Reading package lists...
+[0;32m[1m[✓][0m VOLK library installed successfully
+[0;32m[1m[✓][0m VOLK library installed successfully
+[0;32m[1m[✓][0m All dependencies installed successfully
+[0;32m[1m[✓][0m All dependencies installed successfully
+[2024-11-04 14:17:18] Setting up Python environment...
+[2024-11-04 14:17:18] Setting up Python environment...
+[2024-11-04 14:17:18] Verifying Python packages...
+[2024-11-04 14:17:18] Verifying Python packages...
+[0;32m[1m[✓][0m Python environment setup completed
+[0;32m[1m[✓][0m Python environment setup completed
+[2024-11-04 14:17:18] Creating or backing up module...
+[2024-11-04 14:17:18] Creating or backing up module...
+[2024-11-04 14:17:18] Existing module found at /usr/local/share/gnuradio/gr-customModule
+[2024-11-04 14:17:18] Existing module found at /usr/local/share/gnuradio/gr-customModule
+[0;32m[1m[✓][0m Backup created at /home/subramaniam/gnuradio_backup_20241104_141709/gr-customModule
+[0;32m[1m[✓][0m Backup created at /home/subramaniam/gnuradio_backup_20241104_141709/gr-customModule
+[0;32m[1m[✓][0m Cleaned existing module directory
+[0;32m[1m[✓][0m Cleaned existing module directory
+[2024-11-04 14:17:18] Creating new OOT module...
+[2024-11-04 14:17:18] Creating new OOT module...
+Creating out-of-tree module in ./gr-customModule...
+Done.
+Use 'gr_modtool add' to add a new block to this currently empty module.
+[2024-11-04 14:17:19] Adding block to module...
+GNU Radio module name identified: customModule
+Language: Python
+Block/code identifier: custom_file_writer
+[36mPlease specify the copyright holder: [0mEnter valid argument list, including default arguments: 
+ [36mAdd Python QA code?[0m [Y/n] Adding file 'python/customModule/custom_file_writer.py'...
+Adding file 'python/customModule/qa_custom_file_writer.py'...
+Editing python/customModule/CMakeLists.txt...
+Adding file 'grc/customModule_custom_file_writer.block.yml'...
+Editing grc/CMakeLists.txt...
+[2024-11-04 14:17:36] Copying block files...
+[0;32m[1m[✓][0m Block files copied successfully
+[2024-11-04 14:17:37] Building and installing module...
+-- The CXX compiler identification is GNU 11.4.0
+-- The C compiler identification is GNU 11.4.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2") 
+-- Checking for module 'gmp'
+--   Found gmp, version 6.2.1
+-- Found GMP: /usr/lib/x86_64-linux-gnu/libgmpxx.so  
+-- Using GMP.
+-- Found MPLIB: /usr/lib/x86_64-linux-gnu/libgmpxx.so  
+-- Found Boost: /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake (found suitable version "1.74.0", minimum required is "1.74.0") found components: date_time program_options system regex thread 
+-- Found Volk: Volk::volk  
+-- User set python executable /usr/bin/python3
+-- Found PythonInterp: /usr/bin/python3 (found version "3.10.12") 
+-- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable exact version "3.10.12") 
+-- Performing Test HAVE_VISIBILITY_HIDDEN
+-- Performing Test HAVE_VISIBILITY_HIDDEN - Success
+-- Performing Test HAVE_WARN_SIGN_COMPARE
+-- Performing Test HAVE_WARN_SIGN_COMPARE - Success
+-- Performing Test HAVE_WARN_ALL
+-- Performing Test HAVE_WARN_ALL - Success
+-- Performing Test HAVE_WARN_NO_UNINITIALIZED
+-- Performing Test HAVE_WARN_NO_UNINITIALIZED - Success
+-- Found Git: /usr/bin/git  
+-- Found Doxygen: /usr/bin/doxygen (found version "1.9.1") found components: doxygen missing components: dot
+-- No C++ sources... skipping lib/
+-- PYTHON and GRC components are enabled
+-- No C++ sources... skipping python bindings
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /usr/local/share/gnuradio/gr-customModule/build
+[  0%] Built target pygen_apps_9a6dd283c3de653fbca500f9721f634f
+[ 33%] Generating documentation with doxygen
+[ 66%] Generating __init__.pyo, custom_file_writer.pyo
+[100%] Generating __init__.pyc, custom_file_writer.pyc
+[100%] Built target copy_module_for_tests
+[100%] Built target doxygen_target
+[100%] Built target pygen_python_customModule_fd25f91f51fab80bccccca78a04fa9ae
+[  0%] Built target pygen_apps_9a6dd283c3de653fbca500f9721f634f
+[ 33%] Built target doxygen_target
+[100%] Built target pygen_python_customModule_fd25f91f51fab80bccccca78a04fa9ae
+[100%] Built target copy_module_for_tests
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /usr/local/lib/cmake/gnuradio-customModule/gnuradio-customModuleConfig.cmake
+-- Installing: /usr/local/include/gnuradio/customModule/api.h
+-- Up-to-date: /usr/local/share/doc/gr-customModule/xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/namespacestd.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/group__block.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/indexpage.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/dir_359d2bec989c9a8deeeb9aee335c1c76.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/index.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/dir_f2cd86917185299abf5a1f0679072f3c.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/xml.xsd
+-- Installing: /usr/local/share/doc/gr-customModule/xml/dir_49e56c817e5e54854c35e136979f97ca.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/index.xsd
+-- Installing: /usr/local/share/doc/gr-customModule/xml/dir_d44c64559bbebec7f509842c48db8b23.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/group__defs_8dox.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/api_8h.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/dir_91ae7363f720a5ef22927ff13906c8a2.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/pydoc__macros_8h.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/compound.xsd
+-- Installing: /usr/local/share/doc/gr-customModule/xml/combine.xslt
+-- Installing: /usr/local/share/doc/gr-customModule/xml/main__page_8dox.xml
+-- Installing: /usr/local/share/doc/gr-customModule/xml/dir_902d6fe55786be073ae6681293cdb979.xml
+-- Up-to-date: /usr/local/share/doc/gr-customModule/html
+-- Installing: /usr/local/share/doc/gr-customModule/html/doxygen.svg
+-- Installing: /usr/local/share/doc/gr-customModule/html/api_8h.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/tabs.css
+-- Installing: /usr/local/share/doc/gr-customModule/html/pydoc__macros_8h_source.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/dynsections.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/globals_defs.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/jquery.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/closed.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/tab_a.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/main__page_8dox.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/sync_off.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/dir_359d2bec989c9a8deeeb9aee335c1c76.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/tab_h.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/doxygen.css
+-- Installing: /usr/local/share/doc/gr-customModule/html/api_8h_source.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/group__block.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/open.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/nav_f.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/bdwn.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/splitbar.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/navtreeindex0.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/pydoc__macros_8h.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/modules.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/navtree.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/folderclosed.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/files.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/pydoc__macros_8h.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/bc_s.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/modules.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/nav_h.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/dir_49e56c817e5e54854c35e136979f97ca.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/resize.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/navtree.css
+-- Installing: /usr/local/share/doc/gr-customModule/html/dir_f2cd86917185299abf5a1f0679072f3c.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/dir_91ae7363f720a5ef22927ff13906c8a2.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/files_dup.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/dir_902d6fe55786be073ae6681293cdb979.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/group__defs_8dox.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/api_8h.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/globals.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/dir_d44c64559bbebec7f509842c48db8b23.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/folderopen.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/tab_s.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/doc.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/nav_g.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/index.html
+-- Installing: /usr/local/share/doc/gr-customModule/html/navtreedata.js
+-- Installing: /usr/local/share/doc/gr-customModule/html/tab_b.png
+-- Installing: /usr/local/share/doc/gr-customModule/html/sync_on.png
+-- Installing: /usr/local/lib/python3.10/dist-packages/gnuradio/customModule/__init__.py
+-- Installing: /usr/local/lib/python3.10/dist-packages/gnuradio/customModule/custom_file_writer.py
+-- Installing: /usr/local/lib/python3.10/dist-packages/gnuradio/customModule/__init__.pyc
+-- Installing: /usr/local/lib/python3.10/dist-packages/gnuradio/customModule/custom_file_writer.pyc
+-- Installing: /usr/local/lib/python3.10/dist-packages/gnuradio/customModule/__init__.pyo
+-- Installing: /usr/local/lib/python3.10/dist-packages/gnuradio/customModule/custom_file_writer.pyo
+-- Installing: /usr/local/share/gnuradio/grc/blocks/customModule_custom_file_writer.block.yml
+[0;32m[1m[✓][0m Module built and installed successfully
+[2024-11-04 14:17:39] Verifying installation...
+[0;32m[1m[✓][0m Python module 'customModule' is importable
+[0;32m[1m[✓][0m Verified: /usr/local/share/gnuradio/gr-customModule/python/customModule/custom_file_writer.py
+[0;32m[1m[✓][0m Verified: /usr/local/share/gnuradio/gr-customModule/grc/customModule_custom_file_writer.block.yml
+[0;32m[1m[✓][0m Verified: /usr/local/lib/cmake/gnuradio-customModule/gnuradio-customModuleConfig.cmake
+[2024-11-04 14:17:40] Updating GNU Radio Companion...
+Block with id "custom_file_writer" loaded from
+  /usr/local/share/gnuradio/gr-customModule/grc/customModule_custom_file_writer.block.yml
+overwritten by
+  /usr/local/share/gnuradio/grc/blocks/customModule_custom_file_writer.block.yml
+<<< Welcome to GNU Radio Companion Compiler 3.10.7.0 >>>
+
+Block paths:
+	/usr/local/share/gnuradio/gr-customModule/grc
+	/usr/share/gnuradio/grc/blocks
+	/usr/local/share/gnuradio/grc/blocks
+
+>>> Loading: /usr/local/share/gnuradio/gr-customModule/grc/customModule_custom_file_writer.block.yml
+>>> Load Error: /usr/local/share/gnuradio/gr-customModule/grc/customModule_custom_file_writer.block.yml: 'metadata'
+Compilation error
+[0;32m[1m[✓][0m GRC configuration updated
+
+\033[0;32m\033[1mInstallation Completed Successfully\033[0m
+
+Next Steps:
+1. Close and reopen your terminal or run:
+   source ~/.bashrc
+
+2. Start GNU Radio Companion:
+   gnuradio-companion
+
+3. Click Tools -> Reload Blocks
+
+4. Search for 'custom_file_writer' in the blocks list
+
+Installation Details:
+- Module Name: customModule
+- Block Name: custom_file_writer
+- Install Location: /usr/local/share/gnuradio/gr-customModule
+- Log File: gnuradio_module_setup_20241104_141709.log
+- Backup Location: /home/subramaniam/gnuradio_backup_20241104_141709
+
+If you experience any issues:
+- Check the log file: gnuradio_module_setup_20241104_141709.log
+- Try running: python3 -c "import customModule"
+- Check GRC blocks path in: ~/.gnuradio/config.conf
+

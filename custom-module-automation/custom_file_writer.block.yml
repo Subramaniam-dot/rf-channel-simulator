@@ -1,39 +1,30 @@
 id: custom_file_writer
 label: Custom File Writer
-category: '[Custom]'
-flags: [ python, throttle ]
+category: Custom
+flags: [ python ]
+file_format: 1
 
 parameters:
 -   id: filename
-    label: Base Filename
+    label: Filename Prefix
     dtype: string
-    default: 'output'
+    default: 'output.dat'
 -   id: num_samples
-    label: Samples per File
+    label: Number of Samples
     dtype: int
     default: 1024
 -   id: modulation_scheme
     label: Modulation
-    dtype: enum
-    options: [BPSK, QPSK, QAM16, QAM64]
-    option_labels: [BPSK, QPSK, 16-QAM, 64-QAM]
+    dtype: string
     default: 'BPSK'
 -   id: snr
     label: SNR (dB)
     dtype: float
     default: 10.0
 -   id: freq_offset
-    label: Freq Offset (Hz)
+    label: Freq Offset
     dtype: float
     default: 0.0
--   id: auto_write
-    label: Auto Write
-    dtype: bool
-    default: 'True'
--   id: output_dir
-    label: Output Directory
-    dtype: string
-    default: './data'
 
 inputs:
 -   domain: stream
@@ -44,35 +35,6 @@ outputs: []
 
 templates:
     imports: from customModule import custom_file_writer
-    make: custom_file_writer(
-        filename=${filename},
-        num_samples=${num_samples},
-        modulation_scheme=${modulation_scheme},
-        snr=${snr},
-        freq_offset=${freq_offset},
-        auto_write=${auto_write},
-        output_dir=${output_dir}
-    )
+    make: custom_file_writer(${filename}, ${num_samples}, ${modulation_scheme}, ${snr}, ${freq_offset})
 
-documentation: |-
-    Custom File Writer Block with Enhanced Controls
-    
-    Writes complex samples to binary files with metadata.
-    Features:
-    - Controllable writing through GUI
-    - Automatic or manual write trigger
-    - Status messages
-    - Configurable output directory
-    - Enhanced metadata
-    - Signal statistics in log
-    
-    Parameters:
-    filename - Base name for output files
-    num_samples - Samples per file
-    modulation_scheme - Signal modulation type
-    snr - Signal to noise ratio (dB)
-    freq_offset - Frequency offset (Hz)
-    auto_write - Enable automatic writing
-    output_dir - Directory for output files
-
-file_format: 1
+documentation: Write signal samples to file with metadata

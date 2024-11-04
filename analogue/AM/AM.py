@@ -279,7 +279,7 @@ class AM(gr.top_block, Qt.QWidget):
                 2000,
                 window.WIN_HAMMING,
                 6.76))
-        self.custom_file_writer_0 = custom_file_writer('output.dat', 1024, 'BPSK', 10.0, 0.0)
+        self.custom_file_writer_1 = custom_file_writer('output', 1024, 'BPSK', 10.0, 0.0)
         self.channels_channel_model_0_0 = channels.channel_model(
             noise_voltage=noise_volt,
             frequency_offset=freq_offset,
@@ -326,7 +326,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_selector_0, 1))
-        self.connect((self.channels_channel_model_0_0, 0), (self.custom_file_writer_0, 0))
+        self.connect((self.channels_channel_model_0_0, 0), (self.custom_file_writer_1, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_time_sink_x_0_0, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_waterfall_sink_x_0, 0))

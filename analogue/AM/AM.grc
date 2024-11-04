@@ -403,13 +403,13 @@ blocks:
     coordinate: [424, 800.0]
     rotation: 0
     state: enabled
-- name: custom_file_writer_0
+- name: custom_file_writer_1
   id: custom_file_writer
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    filename: output.dat
+    filename: output
     freq_offset: '0.0'
     modulation_scheme: BPSK
     num_samples: '1024'
@@ -418,7 +418,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 1052.0]
+    coordinate: [744, 1068.0]
     rotation: 0
     state: true
 - name: epy_block_0
@@ -882,7 +882,7 @@ connections:
 - [blocks_throttle2_0, '0', blocks_multiply_xx_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_selector_0, '0']
 - [blocks_wavfile_source_0_0, '0', blocks_selector_0, '1']
-- [channels_channel_model_0_0, '0', custom_file_writer_0, '0']
+- [channels_channel_model_0_0, '0', custom_file_writer_1, '0']
 - [channels_channel_model_0_0, '0', epy_block_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_freq_sink_x_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_time_sink_x_0_0, '0']
