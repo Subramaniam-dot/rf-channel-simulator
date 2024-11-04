@@ -35,7 +35,7 @@ inputs:
 outputs: []
 
 templates:
-    imports: from gnuradio.custom import custom_file_writer
+    imports: from customModule import custom_file_writer
     make: custom_file_writer(${filename}, ${num_samples}, ${modulation_scheme}, ${snr}, ${freq_offset})
 
 documentation: |-

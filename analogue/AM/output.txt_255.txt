@@ -1,0 +1,4 @@
+Modulation Scheme = BPSK
+Signal to Noise Ratio = 10.0 dB
+Frequency Offset = 0.0 Hz
+Number of Samples = 1024
