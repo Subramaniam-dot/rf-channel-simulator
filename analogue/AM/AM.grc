@@ -33,6 +33,18 @@ options:
     state: enabled
 
 blocks:
+- name: SNR
+  id: variable
+  parameters:
+    comment: ''
+    value: (1**2/noise_volt**2)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 20.0]
+    rotation: 0
+    state: enabled
 - name: carrier_freq
   id: variable
   parameters:
@@ -99,6 +111,18 @@ blocks:
     coordinate: [616, 16.0]
     rotation: 0
     state: enabled
+- name: noise_volt
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [360, 176.0]
+    rotation: 0
+    state: disabled
 - name: samp_rate
   id: variable
   parameters:
@@ -410,17 +434,17 @@ blocks:
     alias: ''
     comment: ''
     filename: output
-    freq_offset: '0.0'
-    modulation_scheme: BPSK
-    num_samples: '1024'
-    snr: '10.0'
+    freq_offset: freq_offset
+    modulation_scheme: AM
+    num_samples: '2048'
+    snr: SNR
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [744, 1068.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: epy_block_0
   id: epy_block
   parameters:
@@ -478,9 +502,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [360, 1000.0]
+    coordinate: [368, 1044.0]
     rotation: 0
-    state: disabled
+    state: enabled
 - name: low_pass_filter_0_0
   id: low_pass_filter
   parameters:
@@ -887,6 +911,7 @@ connections:
 - [channels_channel_model_0_0, '0', qtgui_freq_sink_x_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_time_sink_x_0_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_waterfall_sink_x_0, '0']
+- [id_write_button, pressed, custom_file_writer_1, enable_write]
 - [id_write_button, pressed, epy_block_0, enable_write]
 - [low_pass_filter_0_0, '0', channels_channel_model_0_0, '0']
 - [virtual_source_0, '0', low_pass_filter_0_0, '0']

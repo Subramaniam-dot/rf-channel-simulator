@@ -5,36 +5,41 @@ flags: [ python ]
 file_format: 1
 
 parameters:
--   id: filename
-    label: Filename Prefix
-    dtype: string
-    default: 'output.dat'
--   id: num_samples
-    label: Number of Samples
-    dtype: int
-    default: 1024
--   id: modulation_scheme
-    label: Modulation
-    dtype: string
-    default: 'BPSK'
--   id: snr
-    label: SNR (dB)
-    dtype: float
-    default: 10.0
--   id: freq_offset
-    label: Freq Offset
-    dtype: float
-    default: 0.0
+- id: filename
+  label: Filename Prefix
+  dtype: string
+  default: 'output.dat'
+- id: num_samples
+  label: Number of Samples
+  dtype: int
+  default: 1024
+- id: modulation_scheme
+  label: Modulation
+  dtype: string
+  default: 'BPSK'
+- id: snr
+  label: SNR (dB)
+  dtype: float
+  default: 10.0
+- id: freq_offset
+  label: Freq Offset
+  dtype: float
+  default: 0.0
 
 inputs:
--   domain: stream
-    dtype: complex
-    vlen: 1
+- domain: stream
+  dtype: complex
+  vlen: 1
 
+# Add message port definition
+- domain: message
+  id: enable_write
+  optional: true
+  
 outputs: []
 
 templates:
-    imports: from customModule import custom_file_writer
-    make: custom_file_writer(${filename}, ${num_samples}, ${modulation_scheme}, ${snr}, ${freq_offset})
+  imports: from customModule import custom_file_writer
+  make: custom_file_writer(${filename}, ${num_samples}, ${modulation_scheme}, ${snr}, ${freq_offset})
 
 documentation: Write signal samples to file with metadata

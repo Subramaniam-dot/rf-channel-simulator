@@ -52,7 +52,7 @@ blocks:
     alias: ''
     begin_tag: pmt.PMT_NIL
     comment: ''
-    file: output_2.dat
+    file: /home/subramaniam/PhD/rf-channel-simulator/analogue/AM/output_29.dat
     length: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -122,7 +122,7 @@ blocks:
     marker9: '-1'
     name: '""'
     nconnections: '1'
-    size: '1024'
+    size: '2048'
     srate: samp_rate
     stemplot: 'False'
     style1: '1'
@@ -154,8 +154,8 @@ blocks:
     width8: '1'
     width9: '1'
     ylabel: Amplitude
-    ymax: '1'
-    ymin: '-1'
+    ymax: '2'
+    ymin: '-2'
     yunit: '""'
   states:
     bus_sink: false
@@ -170,4 +170,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.9.2
+  grc_version: 3.10.7.0

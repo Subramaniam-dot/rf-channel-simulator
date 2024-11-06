@@ -6,8 +6,9 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Not titled yet
-# GNU Radio version: 3.10.9.2
+# GNU Radio version: 3.10.7.0
 
+from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
 from gnuradio import blocks
@@ -51,9 +52,10 @@ class file_read_test(gr.top_block, Qt.QWidget):
         self.settings = Qt.QSettings("GNU Radio", "file_read_test")
 
         try:
-            geometry = self.settings.value("geometry")
-            if geometry:
-                self.restoreGeometry(geometry)
+            if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
+                self.restoreGeometry(self.settings.value("geometry").toByteArray())
+            else:
+                self.restoreGeometry(self.settings.value("geometry"))
         except BaseException as exc:
             print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
 
@@ -67,14 +69,14 @@ class file_read_test(gr.top_block, Qt.QWidget):
         ##################################################
 
         self.qtgui_time_sink_x_0 = qtgui.time_sink_c(
-            1024, #size
+            2048, #size
             samp_rate, #samp_rate
             "", #name
             1, #number of inputs
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
+        self.qtgui_time_sink_x_0.set_y_axis(-2, 2)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
@@ -117,7 +119,7 @@ class file_read_test(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, 'output_2.dat', True, 0, 0)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/home/subramaniam/PhD/rf-channel-simulator/analogue/AM/output_29.dat', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
 
 
@@ -147,6 +149,9 @@ class file_read_test(gr.top_block, Qt.QWidget):
 
 def main(top_block_cls=file_read_test, options=None):
 
+    if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
+        style = gr.prefs().get_string('qtgui', 'style', 'raster')
+        Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
     tb = top_block_cls()

@@ -69,14 +69,15 @@ class AM(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
+        self.noise_volt = noise_volt = 0.01
         self.volume = volume = 5
         self.time_offset = time_offset = 1.0001
         self.taps = taps = [1.0 + 0.0j, ]
         self.samp_rate = samp_rate = 48000
-        self.noise_volt = noise_volt = 0.01
         self.if_rate = if_rate = 192000
         self.freq_offset = freq_offset = 0.00
         self.carrier_freq = carrier_freq = 5e3
+        self.SNR = SNR = (1**2/noise_volt**2)
 
         ##################################################
         # Blocks
@@ -279,7 +280,11 @@ class AM(gr.top_block, Qt.QWidget):
                 2000,
                 window.WIN_HAMMING,
                 6.76))
-        self.custom_file_writer_1 = custom_file_writer('output', 1024, 'BPSK', 10.0, 0.0)
+        self.id_write_button = _id_write_button_toggle_button = qtgui.MsgPushButton('write', 'pressed',1,"default","default")
+        self.id_write_button = _id_write_button_toggle_button
+
+        self.top_layout.addWidget(_id_write_button_toggle_button)
+        self.custom_file_writer_1 = custom_file_writer('output', 2048, 'AM', SNR, freq_offset)
         self.channels_channel_model_0_0 = channels.channel_model(
             noise_voltage=noise_volt,
             frequency_offset=freq_offset,
@@ -313,6 +318,7 @@ class AM(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.id_write_button, 'pressed'), (self.custom_file_writer_1, 'enable_write'))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.audio_source_0, 0), (self.blocks_selector_0, 2))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_add_const_vxx_0, 0))
@@ -340,6 +346,14 @@ class AM(gr.top_block, Qt.QWidget):
         self.wait()
 
         event.accept()
+
+    def get_noise_volt(self):
+        return self.noise_volt
+
+    def set_noise_volt(self, noise_volt):
+        self.noise_volt = noise_volt
+        self.set_SNR((1**2/self.noise_volt**2))
+        self.channels_channel_model_0_0.set_noise_voltage(self.noise_volt)
 
     def get_volume(self):
         return self.volume
@@ -376,13 +390,6 @@ class AM(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
         self.qtgui_waterfall_sink_x_0.set_frequency_range(0, self.samp_rate)
 
-    def get_noise_volt(self):
-        return self.noise_volt
-
-    def set_noise_volt(self, noise_volt):
-        self.noise_volt = noise_volt
-        self.channels_channel_model_0_0.set_noise_voltage(self.noise_volt)
-
     def get_if_rate(self):
         return self.if_rate
 
@@ -402,6 +409,12 @@ class AM(gr.top_block, Qt.QWidget):
     def set_carrier_freq(self, carrier_freq):
         self.carrier_freq = carrier_freq
         self.analog_sig_source_x_0.set_frequency(self.carrier_freq)
+
+    def get_SNR(self):
+        return self.SNR
+
+    def set_SNR(self, SNR):
+        self.SNR = SNR
 
 
 
