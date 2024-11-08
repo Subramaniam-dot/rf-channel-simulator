@@ -18,13 +18,12 @@ class blk(gr.sync_block):
             in_sig=[np.complex64],
             out_sig=None)
 
-        # Register both message ports
+        # Register message ports
         self.message_port_register_in(pmt.intern("enable_write"))
-        self.message_port_register_in(pmt.intern("in"))  # Add new port for frequency updates
         self.set_msg_handler(pmt.intern("enable_write"), self.handle_message)
-        self.set_msg_handler(pmt.intern("in"), self.handle_freq)  # Add handler for frequency
+        # Add output message port for write signal
+        self.message_port_register_out(pmt.intern("write"))
     
-        
         # Parameters
         self._last_snr = None
         self._last_freq_offset = None
@@ -47,18 +46,6 @@ class blk(gr.sync_block):
         self.setup_directory()
         
         self.logger.info(f"Initialized with SNR={self.snr}, freq_offset={self.freq_offset}")
-
-    def handle_freq(self, msg):
-        """Handle incoming frequency messages"""
-        try:
-            if pmt.is_pair(msg):
-                key = pmt.to_python(pmt.car(msg))
-                value = pmt.to_python(pmt.cdr(msg))
-                if key == "freq":
-                    self.freq_offset = float(value)
-                    self.logger.info(f"Updated frequency offset to: {self.freq_offset}")
-        except Exception as e:
-            self.logger.error(f"Error handling frequency message: {e}")
 
     def set_snr(self, snr):
         """SNR parameter callback"""
@@ -100,14 +87,12 @@ class blk(gr.sync_block):
             with open(meta_filename, 'w') as meta_file:
                 meta_file.write(f"Modulation Scheme = {self.modulation_scheme}\n")
                 meta_file.write(f"Signal to Noise Ratio = {self.snr} dB\n")
-                # Write the current frequency offset for this specific file
                 meta_file.write(f"Frequency Offset = {self.freq_offset} Hz\n")
                 meta_file.write(f"Number of Samples = {self.samples_per_file}\n")
                 meta_file.write(f"File Number = {self.counter + 1} of {self.max_files}\n")
         except IOError as e:
             self.logger.error(f"Failed to write metadata file: {e}")
  
-
     def handle_message(self, msg):
         """Handle enable_write messages"""
         try:
@@ -139,6 +124,9 @@ class blk(gr.sync_block):
             self.logger.warning(f"Buffer contains only {len(self.buffer)} samples, need {self.samples_per_file}")
             return
             
+        # Send write trigger message before writing file
+        self.message_port_pub(pmt.intern("write"), pmt.to_pmt("trigger"))
+        
         filename = f"{self.filename}_{self.counter}.dat"
         try:
             with open(filename, 'wb') as f:

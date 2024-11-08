@@ -30,7 +30,6 @@ from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
 import AM_epy_block_0_0 as epy_block_0_0  # embedded python block
 import AM_epy_block_1 as epy_block_1  # embedded python block
-import AM_epy_block_2 as epy_block_2  # embedded python block
 import sip
 
 
@@ -71,15 +70,17 @@ class AM(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
+        self.samp_rate = samp_rate = 48000
         self.noise_volt = noise_volt = 0.01
         self.volume = volume = 5
         self.time_offset = time_offset = 1.0001
         self.taps = taps = [1.0 + 0.0j, ]
-        self.samp_rate = samp_rate = 48000
         self.if_rate = if_rate = 192000
         self.freq_offset = freq_offset = 1000
+        self.freq_off_min = freq_off_min = -samp_rate/2
+        self.freq_off_max = freq_off_max = +samp_rate/2
         self.carrier_freq = carrier_freq = 5e3
-        self.SNR = SNR = (1**2/noise_volt**2)
+        self.SNR = SNR = (lambda x: __import__('math').log(x, 10))(1**2/noise_volt**2)
 
         ##################################################
         # Blocks
@@ -283,9 +284,8 @@ class AM(gr.top_block, Qt.QWidget):
         self.id_write_button = _id_write_button_toggle_button
 
         self.top_layout.addWidget(_id_write_button_toggle_button)
-        self.epy_block_2 = epy_block_2.blk()
         self.epy_block_1 = epy_block_1.blk(filename="output", num_samples=2048, modulation_scheme="AM", snr=SNR, freq_offset=freq_offset, max_files=200)
-        self.epy_block_0_0 = epy_block_0_0.blk(samp_rate=samp_rate, num_files=200)
+        self.epy_block_0_0 = epy_block_0_0.blk(min_val=freq_off_min, max_val=freq_off_max)
         self.channels_channel_model_0_0 = channels.channel_model(
             noise_voltage=noise_volt,
             frequency_offset=freq_offset,
@@ -320,9 +320,8 @@ class AM(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.epy_block_0_0, 'freq'), (self.epy_block_2, 'in'))
-        self.msg_connect((self.epy_block_2, 'out1'), (self.blocks_msgpair_to_var_0, 'inpair'))
-        self.msg_connect((self.epy_block_2, 'out0'), (self.epy_block_1, 'in'))
+        self.msg_connect((self.epy_block_0_0, 'rand_out'), (self.blocks_msgpair_to_var_0, 'inpair'))
+        self.msg_connect((self.epy_block_1, 'write'), (self.epy_block_0_0, 'trigger'))
         self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_0_0, 'trigger'))
         self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_1, 'enable_write'))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
@@ -353,12 +352,28 @@ class AM(gr.top_block, Qt.QWidget):
 
         event.accept()
 
+    def get_samp_rate(self):
+        return self.samp_rate
+
+    def set_samp_rate(self, samp_rate):
+        self.samp_rate = samp_rate
+        self.set_freq_off_max(+self.samp_rate/2)
+        self.set_freq_off_min(-self.samp_rate/2)
+        self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
+        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5000, 200, window.WIN_HAMMING, 6.76))
+        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
+        self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.samp_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
+        self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
+        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
+        self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
+        self.qtgui_waterfall_sink_x_0.set_frequency_range(0, self.samp_rate)
+
     def get_noise_volt(self):
         return self.noise_volt
 
     def set_noise_volt(self, noise_volt):
         self.noise_volt = noise_volt
-        self.set_SNR((1**2/self.noise_volt**2))
+        self.set_SNR((lambda x: __import__('math').log(x, 10))(1**2/self.noise_volt**2))
         self.channels_channel_model_0_0.set_noise_voltage(self.noise_volt)
 
     def get_volume(self):
@@ -382,21 +397,6 @@ class AM(gr.top_block, Qt.QWidget):
         self.taps = taps
         self.channels_channel_model_0_0.set_taps(self.taps)
 
-    def get_samp_rate(self):
-        return self.samp_rate
-
-    def set_samp_rate(self, samp_rate):
-        self.samp_rate = samp_rate
-        self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
-        self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5000, 200, window.WIN_HAMMING, 6.76))
-        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
-        self.epy_block_0_0.samp_rate = self.samp_rate
-        self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.samp_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
-        self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
-        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
-        self.qtgui_waterfall_sink_x_0.set_frequency_range(0, self.samp_rate)
-
     def get_if_rate(self):
         return self.if_rate
 
@@ -410,6 +410,20 @@ class AM(gr.top_block, Qt.QWidget):
         self.freq_offset = freq_offset
         self.channels_channel_model_0_0.set_frequency_offset(self.freq_offset)
         self.epy_block_1.freq_offset = self.freq_offset
+
+    def get_freq_off_min(self):
+        return self.freq_off_min
+
+    def set_freq_off_min(self, freq_off_min):
+        self.freq_off_min = freq_off_min
+        self.epy_block_0_0.min_val = self.freq_off_min
+
+    def get_freq_off_max(self):
+        return self.freq_off_max
+
+    def set_freq_off_max(self, freq_off_max):
+        self.freq_off_max = freq_off_max
+        self.epy_block_0_0.max_val = self.freq_off_max
 
     def get_carrier_freq(self):
         return self.carrier_freq

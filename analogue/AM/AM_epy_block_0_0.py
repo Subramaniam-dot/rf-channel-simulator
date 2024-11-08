@@ -1,50 +1,48 @@
 import numpy as np
 from gnuradio import gr
 import pmt
-import random
 import logging
-
 class blk(gr.sync_block):
-    def __init__(self, samp_rate=32000, num_files=200):
+    """Random Number Generator"""
+    def __init__(self, min_val=0, max_val=1):
         gr.sync_block.__init__(
             self,
-            name='Random Frequency Generator',
+            name='Random Number Generator',
             in_sig=None,
             out_sig=None)
-        self.samp_rate = samp_rate
-        self.num_files = num_files
-        self.current_file = 0
-        # Pre-generate all frequencies
-        self.frequencies = np.random.uniform(-self.samp_rate/2, self.samp_rate/2, self.num_files)
+        
+        self.min_val = float(min_val)
+        self.max_val = float(max_val)
+        
+        # Message ports
         self.message_port_register_in(pmt.intern('trigger'))
-        self.message_port_register_out(pmt.intern('freq'))
+        self.message_port_register_out(pmt.intern('rand_out'))
         self.set_msg_handler(pmt.intern('trigger'), self.handle_trigger)
         
         # Setup logging
         logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger("random_freq_gen")
+        self.logger = logging.getLogger("random_num_gen")
+    
+    def set_min_val(self, min_val):
+        """Callback to update minimum value"""
+        self.min_val = float(min_val)
+        
+    def set_max_val(self, max_val):
+        """Callback to update maximum value"""
+        self.max_val = float(max_val)
         
     def handle_trigger(self, msg):
-        # Get the pre-generated frequency for current file
-        new_freq = self.frequencies[self.current_file % self.num_files]
+        # Generate new random number
+        rand_num = np.random.uniform(self.min_val, self.max_val)
         
-        # Create PMT message
-        msg = pmt.cons(pmt.intern("freq"), pmt.from_double(new_freq))
+        # Create message
+        msg = pmt.from_double(rand_num)
         
         # Send the message
-        self.message_port_pub(pmt.intern('freq'), msg)
+        self.message_port_pub(pmt.intern('rand_out'), msg)
         
-        # Log the sent frequency
-        self.logger.info(f"Sending frequency {new_freq} Hz for file {self.current_file + 1}")
-        
-        # Increment counter
-        self.current_file += 1
-        
-        # If we've used all frequencies, generate new ones
-        if self.current_file >= self.num_files:
-            self.current_file = 0
-            self.frequencies = np.random.uniform(-self.samp_rate/2, self.samp_rate/2, self.num_files)
-            self.logger.info("Generated new set of frequencies")
+        # Log
+        self.logger.info(f"Sending random number: {rand_num}")
 
     def work(self, input_items, output_items):
-        return len(output_items[0])
+        return 0

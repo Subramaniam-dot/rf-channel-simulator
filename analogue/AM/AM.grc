@@ -37,12 +37,12 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: (1**2/noise_volt**2)
+    value: '10*(lambda x: __import__(''math'').log(x, 10))(1**2/noise_volt**2)'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1120, 20.0]
+    coordinate: [1504, 36.0]
     rotation: 0
     state: enabled
 - name: carrier_freq
@@ -55,6 +55,30 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [472, 16.0]
+    rotation: 0
+    state: enabled
+- name: freq_off_max
+  id: variable
+  parameters:
+    comment: ''
+    value: +samp_rate/2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1296, 1068.0]
+    rotation: 0
+    state: enabled
+- name: freq_off_min
+  id: variable
+  parameters:
+    comment: ''
+    value: -samp_rate/2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 988.0]
     rotation: 0
     state: enabled
 - name: freq_offset
@@ -87,7 +111,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [400, 1212.0]
+    coordinate: [1192, 884.0]
     rotation: 0
     state: enabled
 - name: if_rate
@@ -120,7 +144,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [616, 16.0]
+    coordinate: [1304, 36.0]
     rotation: 0
     state: enabled
 - name: noise_volt
@@ -313,7 +337,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1144, 1252.0]
+    coordinate: [1208, 1188.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -453,90 +477,44 @@ blocks:
     coordinate: [424, 800.0]
     rotation: 0
     state: enabled
-- name: epy_block_0
-  id: epy_block
-  parameters:
-    _source_code: "import numpy as np\nfrom gnuradio import gr\n\nclass custom_file_writer(gr.sync_block):\n\
-      \    def __init__(self, filename='output.dat', num_samples=1024):\n        gr.sync_block.__init__(self,\
-      \ name=\"custom_file_writer\", in_sig=[np.complex64], out_sig=None)\n      \
-      \  self.counter = 0\n        self.samples_per_file = num_samples\n        self.filename\
-      \ = filename\n\n        # Create message port for enabling writing\n       \
-      \ self.message_port_register_in(gr.pmt.intern(\"enable_write\"))\n        self.set_msg_handler(gr.pmt.intern(\"\
-      enable_write\"), self.handle_message)\n\n        # Buffer to hold incoming data\n\
-      \        self.buffer = []\n\n    def handle_message(self, msg):\n        # Check\
-      \ if the message is a boolean 'true' (1)\n        if gr.pmt.is_true(msg):\n\
-      \            self.write_to_file()\n\n    def write_to_file(self):\n        #\
-      \ Check if there are enough samples in the buffer\n        if len(self.buffer)\
-      \ < self.samples_per_file:\n            return  # Not enough data to write\n\
-      \n        # Write the specified number of samples to a file\n        filename\
-      \ = f\"{self.filename}_{self.counter}.dat\"\n        with open(filename, 'ab')\
-      \ as f:\n            # Write the first `num_samples` samples to the file\n \
-      \           f.write(np.array(self.buffer[:self.samples_per_file]).tobytes())\n\
-      \        \n        # Remove written samples from buffer\n        self.buffer\
-      \ = self.buffer[self.samples_per_file:]  \n        \n        self.counter +=\
-      \ 1\n\n    def work(self, input_items, output_items):\n        # Append incoming\
-      \ samples to the buffer\n        self.buffer.extend(input_items[0])  # Add new\
-      \ samples to the buffer\n        return len(input_items[0])  # Return the number\
-      \ of samples processed\n\n"
-    affinity: ''
-    alias: ''
-    comment: ''
-    filename: '"output"'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    num_samples: '1024'
-  states:
-    _io_cache: ('custom_file_writer', 'custom_file_writer', [('filename', "'output.dat'"),
-      ('num_samples', '1024')], [('0', 'complex', 1), ('enable_write', 'message',
-      1)], [], '', ['filename'])
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [736, 976.0]
-    rotation: 0
-    state: disabled
 - name: epy_block_0_0
   id: epy_block
   parameters:
     _source_code: "import numpy as np\nfrom gnuradio import gr\nimport pmt\nimport\
-      \ random\nimport logging\n\nclass blk(gr.sync_block):\n    def __init__(self,\
-      \ samp_rate=32000, num_files=200):\n        gr.sync_block.__init__(\n      \
-      \      self,\n            name='Random Frequency Generator',\n            in_sig=None,\n\
-      \            out_sig=None)\n        self.samp_rate = samp_rate\n        self.num_files\
-      \ = num_files\n        self.current_file = 0\n        # Pre-generate all frequencies\n\
-      \        self.frequencies = np.random.uniform(-self.samp_rate/2, self.samp_rate/2,\
-      \ self.num_files)\n        self.message_port_register_in(pmt.intern('trigger'))\n\
-      \        self.message_port_register_out(pmt.intern('freq'))\n        self.set_msg_handler(pmt.intern('trigger'),\
+      \ logging\nclass blk(gr.sync_block):\n    \"\"\"Random Number Generator\"\"\"\
+      \n    def __init__(self, min_val=0, max_val=1):\n        gr.sync_block.__init__(\n\
+      \            self,\n            name='Random Number Generator',\n          \
+      \  in_sig=None,\n            out_sig=None)\n        \n        self.min_val =\
+      \ float(min_val)\n        self.max_val = float(max_val)\n        \n        #\
+      \ Message ports\n        self.message_port_register_in(pmt.intern('trigger'))\n\
+      \        self.message_port_register_out(pmt.intern('rand_out'))\n        self.set_msg_handler(pmt.intern('trigger'),\
       \ self.handle_trigger)\n        \n        # Setup logging\n        logging.basicConfig(level=logging.INFO)\n\
-      \        self.logger = logging.getLogger(\"random_freq_gen\")\n        \n  \
-      \  def handle_trigger(self, msg):\n        # Get the pre-generated frequency\
-      \ for current file\n        new_freq = self.frequencies[self.current_file %\
-      \ self.num_files]\n        \n        # Create PMT message\n        msg = pmt.cons(pmt.intern(\"\
-      freq\"), pmt.from_double(new_freq))\n        \n        # Send the message\n\
-      \        self.message_port_pub(pmt.intern('freq'), msg)\n        \n        #\
-      \ Log the sent frequency\n        self.logger.info(f\"Sending frequency {new_freq}\
-      \ Hz for file {self.current_file + 1}\")\n        \n        # Increment counter\n\
-      \        self.current_file += 1\n        \n        # If we've used all frequencies,\
-      \ generate new ones\n        if self.current_file >= self.num_files:\n     \
-      \       self.current_file = 0\n            self.frequencies = np.random.uniform(-self.samp_rate/2,\
-      \ self.samp_rate/2, self.num_files)\n            self.logger.info(\"Generated\
-      \ new set of frequencies\")\n\n    def work(self, input_items, output_items):\n\
-      \        return len(output_items[0])\n"
+      \        self.logger = logging.getLogger(\"random_num_gen\")\n    \n    def\
+      \ set_min_val(self, min_val):\n        \"\"\"Callback to update minimum value\"\
+      \"\"\n        self.min_val = float(min_val)\n        \n    def set_max_val(self,\
+      \ max_val):\n        \"\"\"Callback to update maximum value\"\"\"\n        self.max_val\
+      \ = float(max_val)\n        \n    def handle_trigger(self, msg):\n        #\
+      \ Generate new random number\n        rand_num = np.random.uniform(self.min_val,\
+      \ self.max_val)\n        \n        # Create message\n        msg = pmt.from_double(rand_num)\n\
+      \        \n        # Send the message\n        self.message_port_pub(pmt.intern('rand_out'),\
+      \ msg)\n        \n        # Log\n        self.logger.info(f\"Sending random\
+      \ number: {rand_num}\")\n\n    def work(self, input_items, output_items):\n\
+      \        return 0\n"
     affinity: ''
     alias: ''
     comment: ''
+    max_val: freq_off_max
     maxoutbuf: '0'
+    min_val: freq_off_min
     minoutbuf: '0'
-    num_files: '200'
-    samp_rate: samp_rate
   states:
-    _io_cache: ('Random Frequency Generator', 'blk', [('samp_rate', '32000'), ('num_files',
-      '200')], [('trigger', 'message', 1)], [('freq', 'message', 1)], '', ['num_files',
-      'samp_rate'])
+    _io_cache: ('Random Number Generator', 'blk', [('min_val', '0'), ('max_val', '1')],
+      [('trigger', 'message', 1)], [('rand_out', 'message', 1)], 'Random Number Generator',
+      ['max_val', 'min_val'])
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [640, 1252.0]
+    coordinate: [872, 1356.0]
     rotation: 0
     state: true
 - name: epy_block_1
@@ -548,12 +526,11 @@ blocks:
       \ filename='output', num_samples=2048,\n             modulation_scheme=\"AM\"\
       , snr=10000.0, freq_offset=1000.0, max_files=500):\n        gr.sync_block.__init__(\n\
       \            self,\n            name='Custom File Writer',\n            in_sig=[np.complex64],\n\
-      \            out_sig=None)\n\n        # Register both message ports\n      \
-      \  self.message_port_register_in(pmt.intern(\"enable_write\"))\n        self.message_port_register_in(pmt.intern(\"\
-      in\"))  # Add new port for frequency updates\n        self.set_msg_handler(pmt.intern(\"\
-      enable_write\"), self.handle_message)\n        self.set_msg_handler(pmt.intern(\"\
-      in\"), self.handle_freq)  # Add handler for frequency\n    \n        \n    \
-      \    # Parameters\n        self._last_snr = None\n        self._last_freq_offset\
+      \            out_sig=None)\n\n        # Register message ports\n        self.message_port_register_in(pmt.intern(\"\
+      enable_write\"))\n        self.set_msg_handler(pmt.intern(\"enable_write\"),\
+      \ self.handle_message)\n        # Add output message port for write signal\n\
+      \        self.message_port_register_out(pmt.intern(\"write\"))\n    \n     \
+      \   # Parameters\n        self._last_snr = None\n        self._last_freq_offset\
       \ = None\n        self.snr = float(snr)\n        self.freq_offset = float(freq_offset)\n\
       \        self.counter = 0\n        self.samples_per_file = int(num_samples)\n\
       \        self.base_filename = str(filename)\n        self.modulation_scheme\
@@ -563,26 +540,19 @@ blocks:
       \        self.logger = logging.getLogger(\"custom_file_writer\")\n        \n\
       \        # Setup initial directory\n        self.setup_directory()\n       \
       \ \n        self.logger.info(f\"Initialized with SNR={self.snr}, freq_offset={self.freq_offset}\"\
-      )\n\n    def handle_freq(self, msg):\n        \"\"\"Handle incoming frequency\
-      \ messages\"\"\"\n        try:\n            if pmt.is_pair(msg):\n         \
-      \       key = pmt.to_python(pmt.car(msg))\n                value = pmt.to_python(pmt.cdr(msg))\n\
-      \                if key == \"freq\":\n                    self.freq_offset =\
-      \ float(value)\n                    self.logger.info(f\"Updated frequency offset\
-      \ to: {self.freq_offset}\")\n        except Exception as e:\n            self.logger.error(f\"\
-      Error handling frequency message: {e}\")\n\n    def set_snr(self, snr):\n  \
-      \      \"\"\"SNR parameter callback\"\"\"\n        self.snr = float(snr)\n \
-      \       self.logger.info(f\"SNR changed to: {self.snr}\")\n        self.check_parameters()\n\
-      \n    def set_freq_offset(self, freq_offset):\n        \"\"\"Frequency offset\
-      \ parameter callback\"\"\"\n        self.freq_offset = float(freq_offset)\n\
-      \        self.logger.info(f\"Frequency offset changed to: {self.freq_offset}\"\
-      )\n        self.check_parameters()\n\n    def check_parameters(self):\n    \
-      \    \"\"\"Check if parameters have changed\"\"\"\n        if (self._last_snr\
-      \ != self.snr) or (self._last_freq_offset != self.freq_offset):\n          \
-      \  self.logger.info(f\"New parameter combination detected - SNR: {self.snr},\
-      \ Freq Offset: {self.freq_offset}\")\n            self._last_snr = self.snr\n\
-      \            self._last_freq_offset = self.freq_offset\n            self.counter\
-      \ = 0\n            self.done = False\n            self.setup_directory()\n \
-      \           return True\n        return False\n\n    def setup_directory(self):\n\
+      )\n\n    def set_snr(self, snr):\n        \"\"\"SNR parameter callback\"\"\"\
+      \n        self.snr = float(snr)\n        self.logger.info(f\"SNR changed to:\
+      \ {self.snr}\")\n        self.check_parameters()\n\n    def set_freq_offset(self,\
+      \ freq_offset):\n        \"\"\"Frequency offset parameter callback\"\"\"\n \
+      \       self.freq_offset = float(freq_offset)\n        self.logger.info(f\"\
+      Frequency offset changed to: {self.freq_offset}\")\n        self.check_parameters()\n\
+      \n    def check_parameters(self):\n        \"\"\"Check if parameters have changed\"\
+      \"\"\n        if (self._last_snr != self.snr) or (self._last_freq_offset !=\
+      \ self.freq_offset):\n            self.logger.info(f\"New parameter combination\
+      \ detected - SNR: {self.snr}, Freq Offset: {self.freq_offset}\")\n         \
+      \   self._last_snr = self.snr\n            self._last_freq_offset = self.freq_offset\n\
+      \            self.counter = 0\n            self.done = False\n            self.setup_directory()\n\
+      \            return True\n        return False\n\n    def setup_directory(self):\n\
       \        \"\"\"Create directory for current parameters\"\"\"\n        # Remove\
       \ freq_offset from directory name since it changes for each file\n        self.dir_name\
       \ = f\"mod_{self.modulation_scheme}_snr_{self.snr}\"\n        if not os.path.exists(self.dir_name):\n\
@@ -593,12 +563,11 @@ blocks:
       .dat\", \".txt\")\n        try:\n            with open(meta_filename, 'w') as\
       \ meta_file:\n                meta_file.write(f\"Modulation Scheme = {self.modulation_scheme}\\\
       n\")\n                meta_file.write(f\"Signal to Noise Ratio = {self.snr}\
-      \ dB\\n\")\n                # Write the current frequency offset for this specific\
-      \ file\n                meta_file.write(f\"Frequency Offset = {self.freq_offset}\
+      \ dB\\n\")\n                meta_file.write(f\"Frequency Offset = {self.freq_offset}\
       \ Hz\\n\")\n                meta_file.write(f\"Number of Samples = {self.samples_per_file}\\\
       n\")\n                meta_file.write(f\"File Number = {self.counter + 1} of\
       \ {self.max_files}\\n\")\n        except IOError as e:\n            self.logger.error(f\"\
-      Failed to write metadata file: {e}\")\n \n\n    def handle_message(self, msg):\n\
+      Failed to write metadata file: {e}\")\n \n    def handle_message(self, msg):\n\
       \        \"\"\"Handle enable_write messages\"\"\"\n        try:\n          \
       \  if pmt.is_pair(msg):\n                value = pmt.to_python(pmt.cdr(msg))\n\
       \            elif pmt.is_bool(msg):\n                value = pmt.to_python(msg)\n\
@@ -614,18 +583,20 @@ blocks:
       \            return\n            \n        if len(self.buffer) < self.samples_per_file:\n\
       \            self.logger.warning(f\"Buffer contains only {len(self.buffer)}\
       \ samples, need {self.samples_per_file}\")\n            return\n           \
-      \ \n        filename = f\"{self.filename}_{self.counter}.dat\"\n        try:\n\
-      \            with open(filename, 'wb') as f:\n                samples_to_write\
-      \ = list(self.buffer)[:self.samples_per_file]\n                f.write(np.array(samples_to_write,\
-      \ dtype=np.complex64).tobytes())\n                \n            self.write_metadata_file(filename)\n\
-      \            \n            for _ in range(self.samples_per_file):\n        \
-      \        self.buffer.popleft()\n                \n            self.counter +=\
-      \ 1\n            self.logger.info(f\"Writing to {self.dir_name}: File {self.counter}\
-      \ of {self.max_files}\")\n            \n            if self.counter >= self.max_files:\n\
-      \                self.done = True\n                self.enable_write = False\n\
-      \                self.logger.info(f\"Completed generating {self.max_files} files\
-      \ for {self.dir_name}\")\n        except IOError as e:\n            self.logger.error(f\"\
-      Failed to write data file: {e}\")\n\n    def work(self, input_items, output_items):\n\
+      \ \n        # Send write trigger message before writing file\n        self.message_port_pub(pmt.intern(\"\
+      write\"), pmt.to_pmt(\"trigger\"))\n        \n        filename = f\"{self.filename}_{self.counter}.dat\"\
+      \n        try:\n            with open(filename, 'wb') as f:\n              \
+      \  samples_to_write = list(self.buffer)[:self.samples_per_file]\n          \
+      \      f.write(np.array(samples_to_write, dtype=np.complex64).tobytes())\n \
+      \               \n            self.write_metadata_file(filename)\n         \
+      \   \n            for _ in range(self.samples_per_file):\n                self.buffer.popleft()\n\
+      \                \n            self.counter += 1\n            self.logger.info(f\"\
+      Writing to {self.dir_name}: File {self.counter} of {self.max_files}\")\n   \
+      \         \n            if self.counter >= self.max_files:\n               \
+      \ self.done = True\n                self.enable_write = False\n            \
+      \    self.logger.info(f\"Completed generating {self.max_files} files for {self.dir_name}\"\
+      )\n        except IOError as e:\n            self.logger.error(f\"Failed to\
+      \ write data file: {e}\")\n\n    def work(self, input_items, output_items):\n\
       \        \"\"\"Process incoming samples\"\"\"\n        if self.done:\n     \
       \       return len(input_items[0])\n            \n        self.buffer.extend(input_items[0])\n\
       \        \n        if len(self.buffer) >= self.samples_per_file and self.enable_write\
@@ -645,41 +616,15 @@ blocks:
   states:
     _io_cache: ('Custom File Writer', 'blk', [('filename', "'output'"), ('num_samples',
       '2048'), ('modulation_scheme', "'AM'"), ('snr', '10000.0'), ('freq_offset',
-      '1000.0'), ('max_files', '500')], [('0', 'complex', 1), ('in', 'message', 1),
-      ('enable_write', 'message', 1)], [], '', ['filename', 'freq_offset', 'max_files',
+      '1000.0'), ('max_files', '500')], [('0', 'complex', 1), ('enable_write', 'message',
+      1)], [('write', 'message', 1)], '', ['filename', 'freq_offset', 'max_files',
       'modulation_scheme', 'snr'])
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1120, 980.0]
+    coordinate: [920, 948.0]
     rotation: 0
     state: enabled
-- name: epy_block_2
-  id: epy_block
-  parameters:
-    _source_code: "import numpy as np\nfrom gnuradio import gr\nimport pmt\n\nclass\
-      \ blk(gr.sync_block):\n    def __init__(self):\n        gr.sync_block.__init__(\n\
-      \            self,\n            name='Message Copy',\n            in_sig=None,\n\
-      \            out_sig=None)\n            \n        self.message_port_register_in(pmt.intern('in'))\n\
-      \        self.message_port_register_out(pmt.intern('out0'))\n        self.message_port_register_out(pmt.intern('out1'))\n\
-      \        self.set_msg_handler(pmt.intern('in'), self.handle_msg)\n        \n\
-      \    def handle_msg(self, msg):\n        # Copy message to both output ports\n\
-      \        self.message_port_pub(pmt.intern('out0'), msg)\n        self.message_port_pub(pmt.intern('out1'),\
-      \ msg)\n\n    def work(self, input_items, output_items):\n        return len(output_items[0])\n"
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    _io_cache: ('Message Copy', 'blk', [], [('in', 'message', 1)], [('out1', 'message',
-      1), ('out0', 'message', 1)], '', [])
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [920, 1296.0]
-    rotation: 0
-    state: true
 - name: id_write_button
   id: variable_qtgui_msg_push_button
   parameters:
@@ -713,7 +658,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [440, 1084.0]
+    coordinate: [608, 1108.0]
     rotation: 0
     state: enabled
 - name: low_pass_filter_0_0
@@ -1117,15 +1062,12 @@ connections:
 - [blocks_throttle2_0, '0', blocks_multiply_xx_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_selector_0, '0']
 - [blocks_wavfile_source_0_0, '0', blocks_selector_0, '1']
-- [channels_channel_model_0_0, '0', epy_block_0, '0']
 - [channels_channel_model_0_0, '0', epy_block_1, '0']
 - [channels_channel_model_0_0, '0', qtgui_freq_sink_x_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_time_sink_x_0_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_waterfall_sink_x_0, '0']
-- [epy_block_0_0, freq, epy_block_2, in]
-- [epy_block_2, out0, epy_block_1, in]
-- [epy_block_2, out1, blocks_msgpair_to_var_0, inpair]
-- [id_write_button, pressed, epy_block_0, enable_write]
+- [epy_block_0_0, rand_out, blocks_msgpair_to_var_0, inpair]
+- [epy_block_1, write, epy_block_0_0, trigger]
 - [id_write_button, pressed, epy_block_0_0, trigger]
 - [id_write_button, pressed, epy_block_1, enable_write]
 - [low_pass_filter_0_0, '0', channels_channel_model_0_0, '0']
