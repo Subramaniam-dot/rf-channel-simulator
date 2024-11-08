@@ -4,6 +4,8 @@
 # Ignore all __pycache__ directories
 __pycache__/
 
+# Ignore all mod_ directories which contain data files
+mod_*/
 
 # Ignore all .log files
 *.log
