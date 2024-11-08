@@ -1,5 +1,5 @@
 # Ignore all .dat files
-*.dat
+*.dat 
 
 # Ignore all __pycache__ directories
 __pycache__/
@@ -7,3 +7,6 @@ __pycache__/
 
 # Ignore all .log files
 *.log
+
+#Ignore all numbered .txt files (i.e the meta data)
+*_[0-9]*.txt
