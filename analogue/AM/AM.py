@@ -240,7 +240,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
         self.qtgui_freq_sink_x_0.enable_autoscale(False)
         self.qtgui_freq_sink_x_0.enable_grid(False)
-        self.qtgui_freq_sink_x_0.set_fft_average(0.2)
+        self.qtgui_freq_sink_x_0.set_fft_average(1.0)
         self.qtgui_freq_sink_x_0.enable_axis_labels(True)
         self.qtgui_freq_sink_x_0.enable_control_panel(False)
         self.qtgui_freq_sink_x_0.set_fft_window_normalized(False)
@@ -280,7 +280,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.id_write_button = _id_write_button_toggle_button
 
         self.top_layout.addWidget(_id_write_button_toggle_button)
-        self.epy_block_1 = epy_block_1.blk(filename="output", num_samples=2048, modulation_scheme="AM", snr=SNR, freq_offset=freq_offset, max_files=200)
+        self.epy_block_1 = epy_block_1.blk(filename="output", num_samples=2048, modulation_scheme="AM", snr=SNR, freq_offset=freq_offset, max_files=100)
         self.epy_block_0_0 = epy_block_0_0.blk(min_val=freq_off_min, max_val=freq_off_max)
         self.channels_channel_model_0_0 = channels.channel_model(
             noise_voltage=noise_volt,
@@ -313,7 +313,8 @@ class AM(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.msg_connect((self.epy_block_0_0, 'rand_out'), (self.blocks_msgpair_to_var_0, 'inpair'))
-        self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_0_0, 'trigger'))
+        self.msg_connect((self.epy_block_1, 'write'), (self.epy_block_0_0, 'trigger'))
+        self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_1, 'enable_write'))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_add_const_vxx_0, 0))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))

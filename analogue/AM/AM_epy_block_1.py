@@ -124,19 +124,24 @@ class blk(gr.sync_block):
             self.logger.warning(f"Buffer contains only {len(self.buffer)} samples, need {self.samples_per_file}")
             return
             
-        # Send write trigger message before writing file
-        self.message_port_pub(pmt.intern("write"), pmt.to_pmt("trigger"))
+        
         
         filename = f"{self.filename}_{self.counter}.dat"
         try:
             with open(filename, 'wb') as f:
                 samples_to_write = list(self.buffer)[:self.samples_per_file]
                 f.write(np.array(samples_to_write, dtype=np.complex64).tobytes())
-                
+            
             self.write_metadata_file(filename)
             
-            for _ in range(self.samples_per_file):
-                self.buffer.popleft()
+            
+            self.buffer.clear()
+            
+            # Send write trigger message before writing file
+            self.message_port_pub(pmt.intern("write"), pmt.to_pmt("trigger"))
+            
+            #for _ in range(self.samples_per_file):
+            #    self.buffer.popleft()
                 
             self.counter += 1
             self.logger.info(f"Writing to {self.dir_name}: File {self.counter} of {self.max_files}")

@@ -248,6 +248,29 @@ blocks:
     coordinate: [856, 224.0]
     rotation: 0
     state: enabled
+- name: analog_sig_source_x_1
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: '1000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [32, 632.0]
+    rotation: 0
+    state: disabled
 - name: audio_source_0
   id: audio_source
   parameters:
@@ -337,7 +360,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1208, 1188.0]
+    coordinate: [1136, 1232.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -376,6 +399,23 @@ blocks:
     coordinate: [1224, 320.0]
     rotation: 0
     state: enabled
+- name: blocks_null_sink_0
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1560, 400.0]
+    rotation: 0
+    state: disabled
 - name: blocks_selector_0
   id: blocks_selector
   parameters:
@@ -420,6 +460,27 @@ blocks:
     coordinate: [1056, 256.0]
     rotation: 0
     state: enabled
+- name: blocks_throttle2_1
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [248, 688.0]
+    rotation: 0
+    state: disabled
 - name: blocks_wavfile_source_0
   id: blocks_wavfile_source
   parameters:
@@ -515,7 +576,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 1356.0]
+    coordinate: [824, 1224.0]
     rotation: 0
     state: true
 - name: epy_block_1
@@ -584,20 +645,21 @@ blocks:
       \            return\n            \n        if len(self.buffer) < self.samples_per_file:\n\
       \            self.logger.warning(f\"Buffer contains only {len(self.buffer)}\
       \ samples, need {self.samples_per_file}\")\n            return\n           \
-      \ \n        # Send write trigger message before writing file\n        self.message_port_pub(pmt.intern(\"\
-      write\"), pmt.to_pmt(\"trigger\"))\n        \n        filename = f\"{self.filename}_{self.counter}.dat\"\
+      \ \n        \n        \n        filename = f\"{self.filename}_{self.counter}.dat\"\
       \n        try:\n            with open(filename, 'wb') as f:\n              \
       \  samples_to_write = list(self.buffer)[:self.samples_per_file]\n          \
       \      f.write(np.array(samples_to_write, dtype=np.complex64).tobytes())\n \
-      \               \n            self.write_metadata_file(filename)\n         \
-      \   \n            for _ in range(self.samples_per_file):\n                self.buffer.popleft()\n\
-      \                \n            self.counter += 1\n            self.logger.info(f\"\
-      Writing to {self.dir_name}: File {self.counter} of {self.max_files}\")\n   \
-      \         \n            if self.counter >= self.max_files:\n               \
-      \ self.done = True\n                self.enable_write = False\n            \
-      \    self.logger.info(f\"Completed generating {self.max_files} files for {self.dir_name}\"\
-      )\n        except IOError as e:\n            self.logger.error(f\"Failed to\
-      \ write data file: {e}\")\n\n    def work(self, input_items, output_items):\n\
+      \           \n            self.write_metadata_file(filename)\n            \n\
+      \            \n            self.buffer.clear()\n            \n            #\
+      \ Send write trigger message before writing file\n            self.message_port_pub(pmt.intern(\"\
+      write\"), pmt.to_pmt(\"trigger\"))\n            \n            #for _ in range(self.samples_per_file):\n\
+      \            #    self.buffer.popleft()\n                \n            self.counter\
+      \ += 1\n            self.logger.info(f\"Writing to {self.dir_name}: File {self.counter}\
+      \ of {self.max_files}\")\n            \n            if self.counter >= self.max_files:\n\
+      \                self.done = True\n                self.enable_write = False\n\
+      \                self.logger.info(f\"Completed generating {self.max_files} files\
+      \ for {self.dir_name}\")\n        except IOError as e:\n            self.logger.error(f\"\
+      Failed to write data file: {e}\")\n\n    def work(self, input_items, output_items):\n\
       \        \"\"\"Process incoming samples\"\"\"\n        if self.done:\n     \
       \       return len(input_items[0])\n            \n        self.buffer.extend(input_items[0])\n\
       \        \n        if len(self.buffer) >= self.samples_per_file and self.enable_write\
@@ -608,7 +670,7 @@ blocks:
     comment: ''
     filename: '"output"'
     freq_offset: freq_offset
-    max_files: '200'
+    max_files: '100'
     maxoutbuf: '0'
     minoutbuf: '0'
     modulation_scheme: '"AM"'
@@ -659,7 +721,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [536, 1120.0]
+    coordinate: [496, 1160.0]
     rotation: 0
     state: enabled
 - name: low_pass_filter_0_0
@@ -702,7 +764,7 @@ blocks:
     alpha8: '1.0'
     alpha9: '1.0'
     autoscale: 'False'
-    average: '0.2'
+    average: '1.0'
     axislabels: 'True'
     bw: samp_rate
     color1: '"blue"'
@@ -1051,9 +1113,11 @@ blocks:
 
 connections:
 - [analog_sig_source_x_0, '0', blocks_throttle2_0, '0']
+- [analog_sig_source_x_1, '0', blocks_throttle2_1, '0']
 - [audio_source_0, '0', blocks_selector_0, '2']
 - [band_pass_filter_0, '0', blocks_add_const_vxx_0, '0']
 - [blocks_add_const_vxx_0, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_float_to_complex_0, '0', blocks_null_sink_0, '0']
 - [blocks_float_to_complex_0, '0', virtual_sink_0, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_multiply_xx_0, '1']
 - [blocks_multiply_const_vxx_0, '0', qtgui_time_sink_x_0, '0']
@@ -1061,6 +1125,7 @@ connections:
 - [blocks_multiply_xx_0, '0', qtgui_time_sink_x_0, '1']
 - [blocks_selector_0, '0', band_pass_filter_0, '0']
 - [blocks_throttle2_0, '0', blocks_multiply_xx_0, '0']
+- [blocks_throttle2_1, '0', channels_channel_model_0_0, '0']
 - [blocks_wavfile_source_0, '0', band_pass_filter_0, '0']
 - [blocks_wavfile_source_0, '0', blocks_selector_0, '0']
 - [blocks_wavfile_source_0_0, '0', blocks_selector_0, '1']
@@ -1069,7 +1134,8 @@ connections:
 - [channels_channel_model_0_0, '0', qtgui_time_sink_x_0_0, '0']
 - [channels_channel_model_0_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [epy_block_0_0, rand_out, blocks_msgpair_to_var_0, inpair]
-- [id_write_button, pressed, epy_block_0_0, trigger]
+- [epy_block_1, write, epy_block_0_0, trigger]
+- [id_write_button, pressed, epy_block_1, enable_write]
 - [low_pass_filter_0_0, '0', channels_channel_model_0_0, '0']
 - [virtual_source_0, '0', low_pass_filter_0_0, '0']
 
