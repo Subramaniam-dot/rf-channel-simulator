@@ -12,7 +12,6 @@
 from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
-from customModule import custom_file_writer
 from gnuradio import analog
 from gnuradio import audio
 from gnuradio import blocks
@@ -29,6 +28,9 @@ from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
+import AM_epy_block_0_0 as epy_block_0_0  # embedded python block
+import AM_epy_block_1 as epy_block_1  # embedded python block
+import AM_epy_block_2 as epy_block_2  # embedded python block
 import sip
 
 
@@ -75,7 +77,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.taps = taps = [1.0 + 0.0j, ]
         self.samp_rate = samp_rate = 48000
         self.if_rate = if_rate = 192000
-        self.freq_offset = freq_offset = 0.00
+        self.freq_offset = freq_offset = 1000
         self.carrier_freq = carrier_freq = 5e3
         self.SNR = SNR = (1**2/noise_volt**2)
 
@@ -92,9 +94,6 @@ class AM(gr.top_block, Qt.QWidget):
         self._noise_volt_range = Range(0, 1, 0.01, 0.01, 200)
         self._noise_volt_win = RangeWidget(self._noise_volt_range, self.set_noise_volt, "Channel: Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._noise_volt_win)
-        self._freq_offset_range = Range(-0.2, 0.2, 0.001, 0.00, 200)
-        self._freq_offset_win = RangeWidget(self._freq_offset_range, self.set_freq_offset, "Channel: Frequency Offset", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._freq_offset_win)
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -280,11 +279,13 @@ class AM(gr.top_block, Qt.QWidget):
                 2000,
                 window.WIN_HAMMING,
                 6.76))
-        self.id_write_button = _id_write_button_toggle_button = qtgui.MsgPushButton('write', 'pressed',1,"default","default")
+        self.id_write_button = _id_write_button_toggle_button = qtgui.MsgPushButton('id_write_button', 'pressed',freq_offset,"default","default")
         self.id_write_button = _id_write_button_toggle_button
 
         self.top_layout.addWidget(_id_write_button_toggle_button)
-        self.custom_file_writer_1 = custom_file_writer('output', 2048, 'AM', SNR, freq_offset)
+        self.epy_block_2 = epy_block_2.blk()
+        self.epy_block_1 = epy_block_1.blk(filename="output", num_samples=2048, modulation_scheme="AM", snr=SNR, freq_offset=freq_offset, max_files=200)
+        self.epy_block_0_0 = epy_block_0_0.blk(samp_rate=samp_rate, num_files=200)
         self.channels_channel_model_0_0 = channels.channel_model(
             noise_voltage=noise_volt,
             frequency_offset=freq_offset,
@@ -299,6 +300,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.blocks_selector_0.set_enabled(True)
         self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(volume)
+        self.blocks_msgpair_to_var_0 = blocks.msg_pair_to_var(self.set_freq_offset)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_add_const_vxx_0 = blocks.add_const_ff(0.5)
         self.band_pass_filter_0 = filter.fir_filter_fff(
@@ -318,7 +320,11 @@ class AM(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.id_write_button, 'pressed'), (self.custom_file_writer_1, 'enable_write'))
+        self.msg_connect((self.epy_block_0_0, 'freq'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.epy_block_2, 'out1'), (self.blocks_msgpair_to_var_0, 'inpair'))
+        self.msg_connect((self.epy_block_2, 'out0'), (self.epy_block_1, 'in'))
+        self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_0_0, 'trigger'))
+        self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_1, 'enable_write'))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.audio_source_0, 0), (self.blocks_selector_0, 2))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_add_const_vxx_0, 0))
@@ -332,7 +338,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_multiply_xx_0, 0))
         self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_selector_0, 1))
-        self.connect((self.channels_channel_model_0_0, 0), (self.custom_file_writer_1, 0))
+        self.connect((self.channels_channel_model_0_0, 0), (self.epy_block_1, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_time_sink_x_0_0, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
@@ -384,6 +390,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
         self.band_pass_filter_0.set_taps(firdes.band_pass(1, self.samp_rate, 300, 5000, 200, window.WIN_HAMMING, 6.76))
         self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
+        self.epy_block_0_0.samp_rate = self.samp_rate
         self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.samp_rate, 5000, 2000, window.WIN_HAMMING, 6.76))
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
@@ -402,6 +409,7 @@ class AM(gr.top_block, Qt.QWidget):
     def set_freq_offset(self, freq_offset):
         self.freq_offset = freq_offset
         self.channels_channel_model_0_0.set_frequency_offset(self.freq_offset)
+        self.epy_block_1.freq_offset = self.freq_offset
 
     def get_carrier_freq(self):
         return self.carrier_freq
@@ -415,6 +423,7 @@ class AM(gr.top_block, Qt.QWidget):
 
     def set_SNR(self, SNR):
         self.SNR = SNR
+        self.epy_block_1.snr = self.SNR
 
 
 

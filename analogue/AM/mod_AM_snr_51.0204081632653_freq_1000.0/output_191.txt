@@ -1,0 +1,5 @@
+Modulation Scheme = AM
+Signal to Noise Ratio = 51.0204081632653 dB
+Frequency Offset = 16746.511872895186 Hz
+Number of Samples = 2048
+File Number = 192 of 200
