@@ -7,13 +7,12 @@
 # GNU Radio Python Flow Graph
 # Title: AM Audio modulation
 # Description: FM modulation adapted from the GNC Tutorial page
-# GNU Radio version: 3.10.7.0
+# GNU Radio version: 3.10.9.2
 
-from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
+from PyQt5 import QtCore
 from gnuradio import analog
-from gnuradio import audio
 from gnuradio import blocks
 from gnuradio import channels
 from gnuradio.filter import firdes
@@ -26,8 +25,6 @@ from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-from gnuradio.qtgui import Range, RangeWidget
-from PyQt5 import QtCore
 import AM_epy_block_0_0 as epy_block_0_0  # embedded python block
 import AM_epy_block_1 as epy_block_1  # embedded python block
 import sip
@@ -60,10 +57,9 @@ class AM(gr.top_block, Qt.QWidget):
         self.settings = Qt.QSettings("GNU Radio", "AM")
 
         try:
-            if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
-                self.restoreGeometry(self.settings.value("geometry").toByteArray())
-            else:
-                self.restoreGeometry(self.settings.value("geometry"))
+            geometry = self.settings.value("geometry")
+            if geometry:
+                self.restoreGeometry(geometry)
         except BaseException as exc:
             print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
 
@@ -80,20 +76,20 @@ class AM(gr.top_block, Qt.QWidget):
         self.freq_off_min = freq_off_min = -samp_rate/2
         self.freq_off_max = freq_off_max = +samp_rate/2
         self.carrier_freq = carrier_freq = 5e3
-        self.SNR = SNR = (lambda x: __import__('math').log(x, 10))(1**2/noise_volt**2)
+        self.SNR = SNR = 10*(lambda x: __import__('math').log(x, 10))(1**2/noise_volt**2)
 
         ##################################################
         # Blocks
         ##################################################
 
-        self._volume_range = Range(0, 50, 1, 5, 200)
-        self._volume_win = RangeWidget(self._volume_range, self.set_volume, "audio_gain", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._volume_range = qtgui.Range(0, 50, 1, 5, 200)
+        self._volume_win = qtgui.RangeWidget(self._volume_range, self.set_volume, "audio_gain", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._volume_win)
-        self._time_offset_range = Range(0.999, 1.001, 0.0001, 1.0001, 200)
-        self._time_offset_win = RangeWidget(self._time_offset_range, self.set_time_offset, "Channel: Timing Offset", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._time_offset_range = qtgui.Range(0.999, 1.001, 0.0001, 1.0001, 200)
+        self._time_offset_win = qtgui.RangeWidget(self._time_offset_range, self.set_time_offset, "Channel: Timing Offset", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._time_offset_win)
-        self._noise_volt_range = Range(0, 1, 0.01, 0.01, 200)
-        self._noise_volt_win = RangeWidget(self._noise_volt_range, self.set_noise_volt, "Channel: Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._noise_volt_range = qtgui.Range(0, 1, 0.01, 0.01, 200)
+        self._noise_volt_win = qtgui.RangeWidget(self._noise_volt_range, self.set_noise_volt, "Channel: Noise Voltage", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._noise_volt_win)
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
             1024, #size
@@ -293,11 +289,8 @@ class AM(gr.top_block, Qt.QWidget):
             taps=taps,
             noise_seed=0,
             block_tags=False)
-        self.blocks_wavfile_source_0_0 = blocks.wavfile_source('../../Audio_Recording/audio', True)
         self.blocks_wavfile_source_0 = blocks.wavfile_source('../../Audio_Recording/audio', True)
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_float*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
-        self.blocks_selector_0 = blocks.selector(gr.sizeof_float*1,0,0)
-        self.blocks_selector_0.set_enabled(True)
         self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(volume)
         self.blocks_msgpair_to_var_0 = blocks.msg_pair_to_var(self.set_freq_offset)
@@ -313,7 +306,6 @@ class AM(gr.top_block, Qt.QWidget):
                 200,
                 window.WIN_HAMMING,
                 6.76))
-        self.audio_source_0 = audio.source(samp_rate, 'hw:CARD=Generic_1,DEV=0', True)
         self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_SIN_WAVE, carrier_freq, 1, 0, 0)
 
 
@@ -321,11 +313,8 @@ class AM(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.msg_connect((self.epy_block_0_0, 'rand_out'), (self.blocks_msgpair_to_var_0, 'inpair'))
-        self.msg_connect((self.epy_block_1, 'write'), (self.epy_block_0_0, 'trigger'))
         self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_0_0, 'trigger'))
-        self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_1, 'enable_write'))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
-        self.connect((self.audio_source_0, 0), (self.blocks_selector_0, 2))
         self.connect((self.band_pass_filter_0, 0), (self.blocks_add_const_vxx_0, 0))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.low_pass_filter_0_0, 0))
@@ -333,10 +322,8 @@ class AM(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_float_to_complex_0, 0))
         self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_time_sink_x_0, 1))
-        self.connect((self.blocks_selector_0, 0), (self.band_pass_filter_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_multiply_xx_0, 0))
-        self.connect((self.blocks_wavfile_source_0, 0), (self.blocks_selector_0, 0))
-        self.connect((self.blocks_wavfile_source_0_0, 0), (self.blocks_selector_0, 1))
+        self.connect((self.blocks_wavfile_source_0, 0), (self.band_pass_filter_0, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.epy_block_1, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.channels_channel_model_0_0, 0), (self.qtgui_time_sink_x_0_0, 0))
@@ -373,7 +360,7 @@ class AM(gr.top_block, Qt.QWidget):
 
     def set_noise_volt(self, noise_volt):
         self.noise_volt = noise_volt
-        self.set_SNR((lambda x: __import__('math').log(x, 10))(1**2/self.noise_volt**2))
+        self.set_SNR(10*(lambda x: __import__('math').log(x, 10))(1**2/self.noise_volt**2))
         self.channels_channel_model_0_0.set_noise_voltage(self.noise_volt)
 
     def get_volume(self):
@@ -410,6 +397,7 @@ class AM(gr.top_block, Qt.QWidget):
         self.freq_offset = freq_offset
         self.channels_channel_model_0_0.set_frequency_offset(self.freq_offset)
         self.epy_block_1.freq_offset = self.freq_offset
+        self.id_write_button.set_new_msg(self.freq_offset)
 
     def get_freq_off_min(self):
         return self.freq_off_min
@@ -444,9 +432,6 @@ class AM(gr.top_block, Qt.QWidget):
 
 def main(top_block_cls=AM, options=None):
 
-    if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
-        style = gr.prefs().get_string('qtgui', 'style', 'raster')
-        Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
     tb = top_block_cls()

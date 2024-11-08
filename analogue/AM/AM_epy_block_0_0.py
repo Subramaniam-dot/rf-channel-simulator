@@ -36,8 +36,8 @@ class blk(gr.sync_block):
         rand_num = np.random.uniform(self.min_val, self.max_val)
         
         # Create message
-        msg = pmt.from_double(rand_num)
-        
+        #msg = pmt.from_double(rand_num)
+        msg = pmt.cons(pmt.PMT_NIL, pmt.from_double(rand_num))
         # Send the message
         self.message_port_pub(pmt.intern('rand_out'), msg)
         
