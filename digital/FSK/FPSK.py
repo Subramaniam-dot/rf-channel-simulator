@@ -15,6 +15,7 @@ from gnuradio import blocks
 import numpy
 from gnuradio import channels
 from gnuradio.filter import firdes
+from gnuradio import digital
 from gnuradio import filter
 from gnuradio import gr
 from gnuradio.fft import window
@@ -64,18 +65,19 @@ class FPSK(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.sps = sps = 16
-        self.samp_rate = samp_rate = 32000
+        self.sps = sps = 64
+        self.samp_rate = samp_rate = 48000
         self.excess_bw = excess_bw = 0.35
         self.time_offset = time_offset = 1.0001
         self.taps = taps = [1.0 + 0.0j, ]
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(1.0,samp_rate,samp_rate/sps,excess_bw,11*sps)
         self.noise_volt = noise_volt = 0.01
         self.n_samples = n_samples = 1024
-        self.frequency_ratio = frequency_ratio = 16
         self.freq_offset = freq_offset = 0.00
         self.filename = filename = "FSK"
-        self.M = M = 2
+        self.bpsk = bpsk = digital.constellation_bpsk().base()
+        self.bpsk.set_npwr(0.000)
+        self.M = M = 8
 
         ##################################################
         # Blocks
@@ -90,6 +92,14 @@ class FPSK(gr.top_block, Qt.QWidget):
         self._freq_offset_range = qtgui.Range(-0.2, 0.2, 0.001, 0.00, 200)
         self._freq_offset_win = qtgui.RangeWidget(self._freq_offset_range, self.set_freq_offset, "Channel: Frequency Offset", "eng_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._freq_offset_win)
+        self.root_raised_cosine_filter_0 = filter.fir_filter_fff(
+            1,
+            firdes.root_raised_cosine(
+                1,
+                samp_rate,
+                sps,
+                0.35,
+                25))
         self.qtgui_waterfall_sink_x_0 = qtgui.waterfall_sink_c(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -126,7 +136,7 @@ class FPSK(gr.top_block, Qt.QWidget):
 
         self.top_layout.addWidget(self._qtgui_waterfall_sink_x_0_win)
         self.qtgui_time_sink_x_1 = qtgui.time_sink_c(
-            1024, #size
+            2048, #size
             samp_rate, #samp_rate
             "", #name
             2, #number of inputs
@@ -232,7 +242,7 @@ class FPSK(gr.top_block, Qt.QWidget):
         for c in range(0, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
         self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
-            1024, #size
+            4096, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
             0, #fc
             samp_rate, #bw
@@ -277,15 +287,6 @@ class FPSK(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.low_pass_filter_0 = filter.fir_filter_fff(
-            1,
-            firdes.low_pass(
-                1,
-                samp_rate,
-                (samp_rate/50),
-                (samp_rate/100),
-                window.WIN_HAMMING,
-                6.76))
         self.id_write_button_0 = _id_write_button_0_toggle_button = qtgui.MsgPushButton('write', 'pressed',1,"default","default")
         self.id_write_button_0 = _id_write_button_0_toggle_button
 
@@ -298,16 +299,17 @@ class FPSK(gr.top_block, Qt.QWidget):
             taps=taps,
             noise_seed=0,
             block_tags=False)
-        self.blocks_vco_c_0 = blocks.vco_c(samp_rate, (2*3.14*samp_rate/sps), 1)
+        self.blocks_vco_c_0 = blocks.vco_c(samp_rate, (2*3.14*samp_rate/sps*2), 1)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_repeat_0 = blocks.repeat(gr.sizeof_float*1, sps)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(2)
+        self.blocks_pack_k_bits_bb_0 = blocks.pack_k_bits_bb(int((lambda x: __import__('math').log(x, 2))(M)))
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff((1/(M-1)))
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
-        self.blocks_add_const_vxx_0_0 = blocks.add_const_ff(0)
-        self.blocks_add_const_vxx_0 = blocks.add_const_ff((-0.5))
-        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(51, 52, 1000))), True)
+        self.blocks_add_const_vxx_0_0_0 = blocks.add_const_ff((-1))
+        self.blocks_add_const_vxx_0_0 = blocks.add_const_ff(1)
+        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(0, 256, 1000))), True)
 
 
         ##################################################
@@ -315,22 +317,23 @@ class FPSK(gr.top_block, Qt.QWidget):
         ##################################################
         self.msg_connect((self.id_write_button_0, 'pressed'), (self.epy_block_0, 'enable_write'))
         self.connect((self.analog_random_source_x_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
-        self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_add_const_vxx_0_0, 0))
-        self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
-        self.connect((self.blocks_add_const_vxx_0_0, 0), (self.blocks_vco_c_0, 0))
+        self.connect((self.blocks_add_const_vxx_0_0, 0), (self.root_raised_cosine_filter_0, 0))
+        self.connect((self.blocks_add_const_vxx_0_0_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.blocks_char_to_float_0, 0), (self.blocks_repeat_0, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.qtgui_time_sink_x_1, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_float_to_complex_0, 0))
-        self.connect((self.blocks_repeat_0, 0), (self.low_pass_filter_0, 0))
+        self.connect((self.blocks_pack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
+        self.connect((self.blocks_repeat_0, 0), (self.blocks_add_const_vxx_0_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 1))
-        self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
+        self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_pack_k_bits_bb_0, 0))
         self.connect((self.blocks_vco_c_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.epy_block_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
-        self.connect((self.low_pass_filter_0, 0), (self.blocks_add_const_vxx_0, 0))
+        self.connect((self.root_raised_cosine_filter_0, 0), (self.blocks_add_const_vxx_0_0_0, 0))
+        self.connect((self.root_raised_cosine_filter_0, 0), (self.blocks_vco_c_0, 0))
 
 
     def closeEvent(self, event):
@@ -348,6 +351,7 @@ class FPSK(gr.top_block, Qt.QWidget):
         self.sps = sps
         self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
         self.blocks_repeat_0.set_interpolation(self.sps)
+        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, self.sps, 0.35, 25))
 
     def get_samp_rate(self):
         return self.samp_rate
@@ -356,11 +360,11 @@ class FPSK(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate
         self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
         self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, (self.samp_rate/50), (self.samp_rate/100), window.WIN_HAMMING, 6.76))
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
         self.qtgui_waterfall_sink_x_0.set_frequency_range(0, self.samp_rate)
+        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, self.sps, 0.35, 25))
 
     def get_excess_bw(self):
         return self.excess_bw
@@ -402,12 +406,6 @@ class FPSK(gr.top_block, Qt.QWidget):
     def set_n_samples(self, n_samples):
         self.n_samples = n_samples
 
-    def get_frequency_ratio(self):
-        return self.frequency_ratio
-
-    def set_frequency_ratio(self, frequency_ratio):
-        self.frequency_ratio = frequency_ratio
-
     def get_freq_offset(self):
         return self.freq_offset
 
@@ -422,11 +420,18 @@ class FPSK(gr.top_block, Qt.QWidget):
         self.filename = filename
         self.epy_block_0.filename = self.filename
 
+    def get_bpsk(self):
+        return self.bpsk
+
+    def set_bpsk(self, bpsk):
+        self.bpsk = bpsk
+
     def get_M(self):
         return self.M
 
     def set_M(self, M):
         self.M = M
+        self.blocks_multiply_const_vxx_0.set_k((1/(self.M-1)))
 
 
 

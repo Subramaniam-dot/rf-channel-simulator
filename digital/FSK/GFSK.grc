@@ -45,26 +45,6 @@ blocks:
     coordinate: [96, 112.0]
     rotation: 0
     state: enabled
-- name: bpsk
-  id: variable_constellation
-  parameters:
-    comment: ''
-    const_points: '[1+1j, -1-1j]'
-    dims: '1'
-    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
-    npwr: '0.000'
-    precision: '8'
-    rot_sym: '4'
-    soft_dec_lut: None
-    sym_map: '[0, 1]'
-    type: bpsk
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [320, 92.0]
-    rotation: 0
-    state: enabled
 - name: excess_bw
   id: variable
   parameters:
@@ -129,6 +109,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [904, 8.0]
+    rotation: 0
+    state: enabled
+- name: frequency_ratio
+  id: variable
+  parameters:
+    comment: ''
+    value: '16'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [328, 112.0]
     rotation: 0
     state: enabled
 - name: n_samples
@@ -243,7 +235,7 @@ blocks:
     maxoutbuf: '0'
     min: '0'
     minoutbuf: '0'
-    num_samps: '1000'
+    num_samps: '10000'
     repeat: 'True'
     type: byte
   states:
@@ -268,25 +260,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [448, 272.0]
-    rotation: 0
-    state: enabled
-- name: blocks_add_const_vxx_0_0
-  id: blocks_add_const_vxx
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    const: '1'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    type: float
-    vlen: '1'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [496, 360.0]
+    coordinate: [440, 288.0]
     rotation: 0
     state: enabled
 - name: blocks_char_to_float_0
@@ -319,7 +293,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [992, 208.0]
+    coordinate: [824, 208.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -337,7 +311,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [672, 256.0]
+    coordinate: [640, 256.0]
     rotation: 0
     state: enabled
 - name: blocks_repeat_0
@@ -376,7 +350,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [720, 392.0]
+    coordinate: [504, 416.0]
     rotation: 0
     state: enabled
 - name: blocks_unpack_k_bits_bb_0
@@ -393,24 +367,6 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [56, 376.0]
-    rotation: 0
-    state: enabled
-- name: blocks_vco_c_0
-  id: blocks_vco_c
-  parameters:
-    affinity: ''
-    alias: ''
-    amplitude: '1'
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    samp_rate: samp_rate
-    sensitivity: 2*3.14*samp_rate/sps*2
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [568, 512.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0
@@ -431,7 +387,28 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 400.0]
+    coordinate: [712, 400.0]
+    rotation: 0
+    state: enabled
+- name: digital_gfsk_mod_0
+  id: digital_gfsk_mod
+  parameters:
+    affinity: ''
+    alias: ''
+    bt: '0.35'
+    comment: ''
+    do_unpack: 'True'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_symbol: sps
+    sensitivity: '1.0'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [264, 440.0]
     rotation: 0
     state: enabled
 - name: epy_block_0
@@ -473,7 +450,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 664.0]
+    coordinate: [1000, 664.0]
     rotation: 0
     state: enabled
 - name: id_write_button_0
@@ -491,7 +468,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 696.0]
+    coordinate: [520, 640.0]
     rotation: 0
     state: enabled
 - name: qtgui_freq_sink_x_0
@@ -572,7 +549,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 336.0]
+    coordinate: [1000, 336.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -669,7 +646,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 464.0]
+    coordinate: [1000, 464.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_1
@@ -766,7 +743,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1208, 208.0]
+    coordinate: [1040, 208.0]
     rotation: 0
     state: enabled
 - name: qtgui_waterfall_sink_x_0
@@ -827,38 +804,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1168, 560.0]
-    rotation: 0
-    state: enabled
-- name: root_raised_cosine_filter_0
-  id: root_raised_cosine_filter
-  parameters:
-    affinity: ''
-    alias: ''
-    alpha: '0.75'
-    comment: ''
-    decim: '1'
-    gain: '1'
-    interp: '1'
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    ntaps: '25'
-    samp_rate: samp_rate
-    sym_rate: sps
-    type: fir_filter_fff
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [304, 496.0]
+    coordinate: [1000, 560.0]
     rotation: 0
     state: enabled
 
 connections:
 - [analog_random_source_x_0, '0', blocks_unpack_k_bits_bb_0, '0']
-- [blocks_add_const_vxx_0, '0', blocks_add_const_vxx_0_0, '0']
+- [analog_random_source_x_0, '0', digital_gfsk_mod_0, '0']
 - [blocks_add_const_vxx_0, '0', blocks_multiply_const_vxx_0, '0']
-- [blocks_add_const_vxx_0_0, '0', root_raised_cosine_filter_0, '0']
 - [blocks_char_to_float_0, '0', blocks_repeat_0, '0']
 - [blocks_float_to_complex_0, '0', qtgui_time_sink_x_1, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_float_to_complex_0, '0']
@@ -866,13 +819,12 @@ connections:
 - [blocks_throttle2_0, '0', channels_channel_model_0, '0']
 - [blocks_throttle2_0, '0', qtgui_time_sink_x_1, '1']
 - [blocks_unpack_k_bits_bb_0, '0', blocks_char_to_float_0, '0']
-- [blocks_vco_c_0, '0', blocks_throttle2_0, '0']
 - [channels_channel_model_0, '0', epy_block_0, '0']
 - [channels_channel_model_0, '0', qtgui_freq_sink_x_0, '0']
 - [channels_channel_model_0, '0', qtgui_time_sink_x_0, '0']
 - [channels_channel_model_0, '0', qtgui_waterfall_sink_x_0, '0']
+- [digital_gfsk_mod_0, '0', blocks_throttle2_0, '0']
 - [id_write_button_0, pressed, epy_block_0, enable_write]
-- [root_raised_cosine_filter_0, '0', blocks_vco_c_0, '0']
 
 metadata:
   file_format: 1
