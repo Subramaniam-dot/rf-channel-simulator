@@ -63,7 +63,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.sps = sps = 16
+        self.sps = sps = 8
         self.samp_rate = samp_rate = 32000
         self.excess_bw = excess_bw = 0.35
         self.time_offset = time_offset = 1.0001

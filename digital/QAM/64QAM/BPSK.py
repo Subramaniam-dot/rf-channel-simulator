@@ -63,7 +63,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.sps = sps = 16
+        self.sps = sps = 4
         self.samp_rate = samp_rate = 32000
         self.excess_bw = excess_bw = 0.35
         self.time_offset = time_offset = 1.0001
@@ -279,7 +279,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
         self.qtgui_const_sink_x_0 = qtgui.const_sink_c(
-            (1024*4*4), #size
+            (1024*4*2), #size
             "", #name
             1, #number of inputs
             None # parent
