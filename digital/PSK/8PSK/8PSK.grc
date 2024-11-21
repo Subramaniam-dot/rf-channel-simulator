@@ -1,0 +1,1341 @@
+options:
+  parameters:
+    author: ''
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: P_8PSK
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: 8PSK
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: M
+  id: variable
+  parameters:
+    comment: ''
+    value: '2'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [96, 112.0]
+    rotation: 0
+    state: enabled
+- name: SNR
+  id: variable
+  parameters:
+    comment: ''
+    value: '10*(lambda x: __import__(''math'').log(x, 10))(1**2/noise_volt**2)'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 32.0]
+    rotation: 0
+    state: enabled
+- name: excess_bw
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.35'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 8.0]
+    rotation: 0
+    state: enabled
+- name: excess_bw
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.1'
+    stop: '1'
+    value: '0'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1192, 8.0]
+    rotation: 0
+    state: disabled
+- name: filename
+  id: variable
+  parameters:
+    comment: ''
+    value: '"8PSK"'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 112.0]
+    rotation: 0
+    state: enabled
+- name: freq_off_max
+  id: variable
+  parameters:
+    comment: ''
+    value: +samp_rate/2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1384, 744.0]
+    rotation: 0
+    state: enabled
+- name: freq_off_min
+  id: variable
+  parameters:
+    comment: ''
+    value: -samp_rate/2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1368, 664.0]
+    rotation: 0
+    state: enabled
+- name: freq_offset
+  id: variable_qtgui_range
+  parameters:
+    comment: 0,2,1,1
+    gui_hint: ''
+    label: 'Channel: Frequency Offset'
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-0.2'
+    step: '0.001'
+    stop: '0.2'
+    value: '0.00'
+    widget: eng_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [904, 8.0]
+    rotation: 0
+    state: disabled
+- name: freq_offset
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 560.0]
+    rotation: 0
+    state: enabled
+- name: n_samples
+  id: variable
+  parameters:
+    comment: ''
+    value: '1024'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [160, 112.0]
+    rotation: 0
+    state: enabled
+- name: noise_volt
+  id: variable_qtgui_range
+  parameters:
+    comment: 0,0,1,1
+    gui_hint: ''
+    label: 'Channel: Noise Voltage'
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.01'
+    stop: '1'
+    value: '0.01'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [568, 8.0]
+    rotation: 0
+    state: disabled
+- name: noise_volt
+  id: variable
+  parameters:
+    comment: ''
+    value: '0.1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1032, 32.0]
+    rotation: 0
+    state: enabled
+- name: p_8psk
+  id: variable_constellation
+  parameters:
+    comment: ''
+    const_points: '[1+1j, -1-1j]'
+    dims: '1'
+    normalization: digital.constellation.AMPLITUDE_NORMALIZATION
+    npwr: '0.000'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1]'
+    type: 8psk
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [320, 92.0]
+    rotation: 0
+    state: enabled
+- name: rrc_taps
+  id: variable
+  parameters:
+    comment: ''
+    value: firdes.root_raised_cosine(1.0,samp_rate,samp_rate/sps,excess_bw,11*sps)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [256, 8.0]
+    rotation: 0
+    state: enabled
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '32000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [160, 8.0]
+    rotation: 0
+    state: enabled
+- name: sps
+  id: variable
+  parameters:
+    comment: ''
+    value: '16'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [248, 112.0]
+    rotation: 0
+    state: enabled
+- name: taps
+  id: variable
+  parameters:
+    comment: ''
+    value: '[1.0 + 0.0j, ]'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [496, 8.0]
+    rotation: 0
+    state: enabled
+- name: time_offset
+  id: variable_qtgui_range
+  parameters:
+    comment: 0,1,1,1
+    gui_hint: ''
+    label: 'Channel: Timing Offset'
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0.999'
+    step: '0.0001'
+    stop: '1.001'
+    value: '1.0001'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [736, 8.0]
+    rotation: 0
+    state: enabled
+- name: analog_random_source_x_0
+  id: analog_random_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    max: '256'
+    maxoutbuf: '0'
+    min: '0'
+    minoutbuf: '0'
+    num_samps: '10000'
+    repeat: 'True'
+    type: byte
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [16, 472.0]
+    rotation: 0
+    state: enabled
+- name: analog_sig_source_x_0
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: '1000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    showports: 'False'
+    type: byte
+    waveform: analog.GR_SQR_WAVE
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 776.0]
+    rotation: 0
+    state: disabled
+- name: blocks_add_const_vxx_0
+  id: blocks_add_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '-0.5'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [352, 280.0]
+    rotation: 0
+    state: enabled
+- name: blocks_char_to_float_0
+  id: blocks_char_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [216, 304.0]
+    rotation: 0
+    state: enabled
+- name: blocks_char_to_float_0_0
+  id: blocks_char_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [144, 624.0]
+    rotation: 0
+    state: disabled
+- name: blocks_float_to_complex_0
+  id: blocks_float_to_complex
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [824, 208.0]
+    rotation: 0
+    state: enabled
+- name: blocks_msgpair_to_var_0
+  id: blocks_msgpair_to_var
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    target: freq_offset
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1224, 912.0]
+    rotation: 0
+    state: enabled
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '2'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [504, 280.0]
+    rotation: 0
+    state: enabled
+- name: blocks_repeat_0
+  id: blocks_repeat
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    interp: sps
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [656, 224.0]
+    rotation: 0
+    state: enabled
+- name: blocks_throttle2_0
+  id: blocks_throttle2
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    limit: auto
+    maximum: '0.1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 424.0]
+    rotation: 0
+    state: enabled
+- name: blocks_uchar_to_float_0
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [168, 240.0]
+    rotation: 0
+    state: disabled
+- name: blocks_unpack_k_bits_bb_0
+  id: blocks_unpack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '8'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [88, 368.0]
+    rotation: 0
+    state: enabled
+- name: channels_channel_model_0
+  id: channels_channel_model
+  parameters:
+    affinity: ''
+    alias: ''
+    block_tags: 'False'
+    comment: ''
+    epsilon: time_offset
+    freq_offset: freq_offset
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_voltage: noise_volt
+    seed: '0'
+    taps: taps
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [712, 368.0]
+    rotation: 0
+    state: enabled
+- name: digital_constellation_modulator_0
+  id: digital_constellation_modulator
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    constellation: p_8psk
+    differential: 'True'
+    excess_bw: excess_bw
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_symbol: sps
+    truncate: 'False'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 408.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np\nfrom gnuradio import gr\n\nclass custom_file_writer(gr.sync_block):\n\
+      \    def __init__(self, filename='output.dat', num_samples=1024):\n        gr.sync_block.__init__(self,\
+      \ name=\"custom_file_writer\", in_sig=[np.complex64], out_sig=None)\n      \
+      \  self.counter = 0\n        self.samples_per_file = num_samples\n        self.filename\
+      \ = filename\n\n        # Create message port for enabling writing\n       \
+      \ self.message_port_register_in(gr.pmt.intern(\"enable_write\"))\n        self.set_msg_handler(gr.pmt.intern(\"\
+      enable_write\"), self.handle_message)\n\n        # Buffer to hold incoming data\n\
+      \        self.buffer = []\n\n    def handle_message(self, msg):\n        # Check\
+      \ if the message is a boolean 'true' (1)\n        if gr.pmt.is_true(msg):\n\
+      \            self.write_to_file()\n\n    def write_to_file(self):\n        #\
+      \ Check if there are enough samples in the buffer\n        if len(self.buffer)\
+      \ < self.samples_per_file:\n            return  # Not enough data to write\n\
+      \n        # Write the specified number of samples to a file\n        filename\
+      \ = f\"{self.filename}_{self.counter}.dat\"\n        with open(filename, 'ab')\
+      \ as f:\n            # Write the first `num_samples` samples to the file\n \
+      \           f.write(np.array(self.buffer[:self.samples_per_file]).tobytes())\n\
+      \        \n        # Remove written samples from buffer\n        self.buffer\
+      \ = self.buffer[self.samples_per_file:]  \n        \n        self.counter +=\
+      \ 1\n\n    def work(self, input_items, output_items):\n        # Append incoming\
+      \ samples to the buffer\n        self.buffer.extend(input_items[0])  # Add new\
+      \ samples to the buffer\n        return len(input_items[0])  # Return the number\
+      \ of samples processed\n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    filename: filename
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_samples: n_samples
+  states:
+    _io_cache: ('custom_file_writer', 'custom_file_writer', [('filename', "'output.dat'"),
+      ('num_samples', '1024')], [('0', 'complex', 1), ('enable_write', 'message',
+      1)], [], '', ['filename'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [776, 604.0]
+    rotation: 0
+    state: disabled
+- name: epy_block_0_0
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np\nfrom gnuradio import gr\nimport pmt\nimport\
+      \ logging\nclass blk(gr.sync_block):\n    \"\"\"Random Number Generator\"\"\"\
+      \n    def __init__(self, min_val=0, max_val=1):\n        gr.sync_block.__init__(\n\
+      \            self,\n            name='Random Number Generator',\n          \
+      \  in_sig=None,\n            out_sig=None)\n        \n        self.min_val =\
+      \ float(min_val)\n        self.max_val = float(max_val)\n        \n        #\
+      \ Message ports\n        self.message_port_register_in(pmt.intern('trigger'))\n\
+      \        self.message_port_register_out(pmt.intern('rand_out'))\n        self.set_msg_handler(pmt.intern('trigger'),\
+      \ self.handle_trigger)\n        \n        # Setup logging\n        logging.basicConfig(level=logging.INFO)\n\
+      \        self.logger = logging.getLogger(\"random_num_gen\")\n    \n    def\
+      \ set_min_val(self, min_val):\n        \"\"\"Callback to update minimum value\"\
+      \"\"\n        self.min_val = float(min_val)\n        \n    def set_max_val(self,\
+      \ max_val):\n        \"\"\"Callback to update maximum value\"\"\"\n        self.max_val\
+      \ = float(max_val)\n        \n    def handle_trigger(self, msg):\n        #\
+      \ Generate new random number\n        rand_num = np.random.uniform(self.min_val,\
+      \ self.max_val)\n        \n        # Create message\n        #msg = pmt.from_double(rand_num)\n\
+      \        msg = pmt.cons(pmt.PMT_NIL, pmt.from_double(rand_num))\n        # Send\
+      \ the message\n        self.message_port_pub(pmt.intern('rand_out'), msg)\n\
+      \        \n        # Log\n        self.logger.info(f\"Sending random number:\
+      \ {rand_num}\")\n\n    def work(self, input_items, output_items):\n        return\
+      \ 0\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    max_val: freq_off_max
+    maxoutbuf: '0'
+    min_val: freq_off_min
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Random Number Generator', 'blk', [('min_val', '0'), ('max_val', '1')],
+      [('trigger', 'message', 1)], [('rand_out', 'message', 1)], 'Random Number Generator',
+      ['max_val', 'min_val'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 896.0]
+    rotation: 0
+    state: true
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Block for Custom File Writer\n\"\"\"\n\n\
+      import numpy as np\nfrom gnuradio import gr\nimport pmt\nfrom collections import\
+      \ deque\nimport logging\nimport os\n\nclass blk(gr.sync_block):\n    def __init__(self,\
+      \ filename='output', num_samples=2048,\n             modulation_scheme=\"AM\"\
+      , snr=10000.0, freq_offset=1000.0, max_files=500):\n        gr.sync_block.__init__(\n\
+      \            self,\n            name='Custom File Writer',\n            in_sig=[np.complex64],\n\
+      \            out_sig=None)\n\n        # Register message ports\n        self.message_port_register_in(pmt.intern(\"\
+      enable_write\"))\n        self.set_msg_handler(pmt.intern(\"enable_write\"),\
+      \ self.handle_message)\n        # Add output message port for write signal\n\
+      \        self.message_port_register_out(pmt.intern(\"write\"))\n    \n     \
+      \   # Parameters\n        self._last_snr = None\n        self._last_freq_offset\
+      \ = None\n        self.snr = float(snr)\n        self.freq_offset = float(freq_offset)\n\
+      \        self.counter = 0\n        self.samples_per_file = int(num_samples)\n\
+      \        self.base_filename = str(filename)\n        self.modulation_scheme\
+      \ = str(modulation_scheme)\n        self.max_files = int(max_files)\n      \
+      \  self.buffer = deque()\n        self.done = False\n        self.enable_write\
+      \ = False\n        \n        # Setup logging\n        logging.basicConfig(level=logging.INFO)\n\
+      \        self.logger = logging.getLogger(\"custom_file_writer\")\n        \n\
+      \        # Setup initial directory\n        self.setup_directory()\n       \
+      \ \n        self.logger.info(f\"Initialized with SNR={self.snr}, freq_offset={self.freq_offset}\"\
+      )\n\n    def set_snr(self, snr):\n        \"\"\"SNR parameter callback\"\"\"\
+      \n        self.snr = float(snr)\n        self.logger.info(f\"SNR changed to:\
+      \ {self.snr}\")\n        self.check_parameters()\n\n    def set_freq_offset(self,\
+      \ freq_offset):\n        \"\"\"Frequency offset parameter callback\"\"\"\n \
+      \       self.freq_offset = float(freq_offset)\n        self.logger.info(f\"\
+      Frequency offset changed to: {self.freq_offset}\")\n        self.check_parameters()\n\
+      \n    def check_parameters(self):\n        \"\"\"Check if parameters have changed\"\
+      \"\"\n        if (self._last_snr != self.snr) or (self._last_freq_offset !=\
+      \ self.freq_offset):\n            self.logger.info(f\"New parameter combination\
+      \ detected - SNR: {self.snr}, Freq Offset: {self.freq_offset}\")\n         \
+      \   self._last_snr = self.snr\n            self._last_freq_offset = self.freq_offset\n\
+      \            self.counter = 0\n            self.done = False\n            self.setup_directory()\n\
+      \            return True\n        return False\n\n    def setup_directory(self):\n\
+      \        \"\"\"Create directory for current parameters\"\"\"\n        # Remove\
+      \ freq_offset from directory name since it changes for each file\n        self.dir_name\
+      \ = f\"mod_{self.modulation_scheme}_snr_{self.snr}\"\n        if not os.path.exists(self.dir_name):\n\
+      \            os.makedirs(self.dir_name)\n        self.filename = os.path.join(self.dir_name,\
+      \ self.base_filename)\n        self.logger.info(f\"Created directory: {self.dir_name}\"\
+      )\n\t    \n    def write_metadata_file(self, filename):\n        \"\"\"Write\
+      \ metadata file with current parameters\"\"\"\n        meta_filename = filename.replace(\"\
+      .dat\", \".txt\")\n        try:\n            with open(meta_filename, 'w') as\
+      \ meta_file:\n                meta_file.write(f\"Modulation Scheme = {self.modulation_scheme}\\\
+      n\")\n                meta_file.write(f\"Signal to Noise Ratio = {self.snr}\
+      \ dB\\n\")\n                meta_file.write(f\"Frequency Offset = {self.freq_offset}\
+      \ Hz\\n\")\n                meta_file.write(f\"Number of Samples = {self.samples_per_file}\\\
+      n\")\n                meta_file.write(f\"File Number = {self.counter + 1} of\
+      \ {self.max_files}\\n\")\n        except IOError as e:\n            self.logger.error(f\"\
+      Failed to write metadata file: {e}\")\n \n    def handle_message(self, msg):\n\
+      \        \"\"\"Handle enable_write messages\"\"\"\n        try:\n          \
+      \  if pmt.is_pair(msg):\n                value = pmt.to_python(pmt.cdr(msg))\n\
+      \            elif pmt.is_bool(msg):\n                value = pmt.to_python(msg)\n\
+      \            else:\n                value = bool(pmt.to_python(msg))\n     \
+      \       \n            self.enable_write = value\n            \n            if\
+      \ self.enable_write:\n                # Always check parameters when writing\
+      \ is enabled\n                self.check_parameters()\n                if not\
+      \ self.done:\n                    self.write_to_file()\n                else:\n\
+      \                    self.logger.info(f\"Already completed {self.max_files}\
+      \ files for current parameters\")\n        except Exception as e:\n        \
+      \    self.logger.error(f\"Error in message handler: {e}\")\n\n    def write_to_file(self):\n\
+      \        \"\"\"Write samples to file\"\"\"\n        if self.done or not self.enable_write:\n\
+      \            return\n            \n        if len(self.buffer) < self.samples_per_file:\n\
+      \            self.logger.warning(f\"Buffer contains only {len(self.buffer)}\
+      \ samples, need {self.samples_per_file}\")\n            return\n           \
+      \ \n        \n        \n        filename = f\"{self.filename}_{self.counter}.dat\"\
+      \n        try:\n            with open(filename, 'wb') as f:\n              \
+      \  samples_to_write = list(self.buffer)[:self.samples_per_file]\n          \
+      \      f.write(np.array(samples_to_write, dtype=np.complex64).tobytes())\n \
+      \           \n            self.write_metadata_file(filename)\n            \n\
+      \            \n            self.buffer.clear()\n            \n            #\
+      \ Send write trigger message before writing file\n            self.message_port_pub(pmt.intern(\"\
+      write\"), pmt.to_pmt(\"trigger\"))\n            \n            #for _ in range(self.samples_per_file):\n\
+      \            #    self.buffer.popleft()\n                \n            self.counter\
+      \ += 1\n            self.logger.info(f\"Writing to {self.dir_name}: File {self.counter}\
+      \ of {self.max_files}\")\n            \n            if self.counter >= self.max_files:\n\
+      \                self.done = True\n                self.enable_write = False\n\
+      \                self.logger.info(f\"Completed generating {self.max_files} files\
+      \ for {self.dir_name}\")\n        except IOError as e:\n            self.logger.error(f\"\
+      Failed to write data file: {e}\")\n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"Process incoming samples\"\"\"\n        if self.done:\n     \
+      \       return len(input_items[0])\n            \n        self.buffer.extend(input_items[0])\n\
+      \        \n        if len(self.buffer) >= self.samples_per_file and self.enable_write\
+      \ and not self.done:\n            self.write_to_file()\n            \n     \
+      \   return len(input_items[0])\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    filename: '"output"'
+    freq_offset: freq_offset
+    max_files: '100'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    modulation_scheme: '"8PSK"'
+    num_samples: '2048'
+    snr: SNR
+  states:
+    _io_cache: ('Custom File Writer', 'blk', [('filename', "'output'"), ('num_samples',
+      '2048'), ('modulation_scheme', "'AM'"), ('snr', '10000.0'), ('freq_offset',
+      '1000.0'), ('max_files', '500')], [('0', 'complex', 1), ('enable_write', 'message',
+      1)], [('write', 'message', 1)], '', ['filename', 'freq_offset', 'max_files',
+      'modulation_scheme', 'snr'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [992, 644.0]
+    rotation: 0
+    state: enabled
+- name: id_write_button_0
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: write
+    msgName: pressed
+    relBackgroundColor: default
+    relFontColor: default
+    type: bool
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [520, 640.0]
+    rotation: 0
+    state: disabled
+- name: id_write_button_0_0
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    msgName: pressed
+    relBackgroundColor: default
+    relFontColor: default
+    type: real
+    value: freq_offset
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [584, 832.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_eye_sink_x_0
+  id: qtgui_eye_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: blue
+    color2: blue
+    color3: blue
+    color4: blue
+    color5: blue
+    color6: blue
+    color7: blue
+    color8: blue
+    color9: blue
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    nconnections: '1'
+    samp_per_symbol: sps
+    size: '4096'
+    srate: samp_rate
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1328, 232.0]
+    rotation: 0
+    state: disabled
+- name: qtgui_freq_sink_x_0
+  id: qtgui_freq_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    average: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: 1,2,1,2
+    label: Relative Gain
+    label1: ''
+    label10: ''''''
+    label2: ''''''
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    nconnections: '1'
+    norm_window: 'False'
+    showports: 'False'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: '""'
+    type: complex
+    units: dB
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-140'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 336.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'False'
+    grid: 'False'
+    gui_hint: 1,0,1,2
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '""'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '2'
+    ymin: '-2'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 464.0]
+    rotation: 0
+    state: disabled
+- name: qtgui_time_sink_x_1
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '""'
+    nconnections: '2'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '2'
+    ymin: '-2'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 208.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_2
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '""'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [312, 688.0]
+    rotation: 0
+    state: disabled
+- name: qtgui_waterfall_sink_x_0
+  id: qtgui_waterfall_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '0'
+    color10: '0'
+    color2: '0'
+    color3: '0'
+    color4: '0'
+    color5: '0'
+    color6: '0'
+    color7: '0'
+    color8: '0'
+    color9: '0'
+    comment: ''
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: ''
+    int_max: '10'
+    int_min: '-140'
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    nconnections: '1'
+    showports: 'False'
+    type: complex
+    update_time: '0.10'
+    wintype: window.WIN_BLACKMAN_hARRIS
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 560.0]
+    rotation: 0
+    state: disabled
+
+connections:
+- [analog_random_source_x_0, '0', blocks_char_to_float_0_0, '0']
+- [analog_random_source_x_0, '0', blocks_unpack_k_bits_bb_0, '0']
+- [analog_random_source_x_0, '0', digital_constellation_modulator_0, '0']
+- [analog_sig_source_x_0, '0', blocks_char_to_float_0, '0']
+- [analog_sig_source_x_0, '0', digital_constellation_modulator_0, '0']
+- [blocks_add_const_vxx_0, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_char_to_float_0, '0', blocks_add_const_vxx_0, '0']
+- [blocks_char_to_float_0_0, '0', qtgui_time_sink_x_2, '0']
+- [blocks_float_to_complex_0, '0', qtgui_time_sink_x_1, '0']
+- [blocks_multiply_const_vxx_0, '0', blocks_repeat_0, '0']
+- [blocks_repeat_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_throttle2_0, '0', channels_channel_model_0, '0']
+- [blocks_throttle2_0, '0', qtgui_eye_sink_x_0, '0']
+- [blocks_throttle2_0, '0', qtgui_time_sink_x_1, '1']
+- [blocks_uchar_to_float_0, '0', blocks_add_const_vxx_0, '0']
+- [blocks_unpack_k_bits_bb_0, '0', blocks_char_to_float_0, '0']
+- [blocks_unpack_k_bits_bb_0, '0', blocks_uchar_to_float_0, '0']
+- [channels_channel_model_0, '0', epy_block_0, '0']
+- [channels_channel_model_0, '0', epy_block_1, '0']
+- [channels_channel_model_0, '0', qtgui_freq_sink_x_0, '0']
+- [channels_channel_model_0, '0', qtgui_time_sink_x_0, '0']
+- [channels_channel_model_0, '0', qtgui_waterfall_sink_x_0, '0']
+- [digital_constellation_modulator_0, '0', blocks_throttle2_0, '0']
+- [epy_block_0_0, rand_out, blocks_msgpair_to_var_0, inpair]
+- [epy_block_1, write, epy_block_0_0, trigger]
+- [id_write_button_0, pressed, epy_block_0, enable_write]
+- [id_write_button_0_0, pressed, epy_block_1, enable_write]
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.11.0
