@@ -6,9 +6,8 @@
 #
 # GNU Radio Python Flow Graph
 # Title: Not titled yet
-# GNU Radio version: 3.10.7.0
+# GNU Radio version: 3.10.9.2
 
-from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
 from gnuradio import blocks
@@ -52,17 +51,16 @@ class file_read_test(gr.top_block, Qt.QWidget):
         self.settings = Qt.QSettings("GNU Radio", "file_read_test")
 
         try:
-            if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
-                self.restoreGeometry(self.settings.value("geometry").toByteArray())
-            else:
-                self.restoreGeometry(self.settings.value("geometry"))
+            geometry = self.settings.value("geometry")
+            if geometry:
+                self.restoreGeometry(geometry)
         except BaseException as exc:
             print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
 
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 32000
+        self.samp_rate = samp_rate = 48000
 
         ##################################################
         # Blocks
@@ -72,11 +70,11 @@ class file_read_test(gr.top_block, Qt.QWidget):
             2048, #size
             samp_rate, #samp_rate
             "", #name
-            1, #number of inputs
+            4, #number of inputs
             None # parent
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-2, 2)
+        self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
 
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
@@ -103,7 +101,7 @@ class file_read_test(gr.top_block, Qt.QWidget):
             -1, -1, -1, -1, -1]
 
 
-        for i in range(2):
+        for i in range(8):
             if len(labels[i]) == 0:
                 if (i % 2 == 0):
                     self.qtgui_time_sink_x_0.set_line_label(i, "Re{{Data {0}}}".format(i/2))
@@ -119,14 +117,69 @@ class file_read_test(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/home/subramaniam/PhD/rf-channel-simulator/analogue/AM/output_29.dat', True, 0, 0)
+        self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
+            2048, #size
+            window.WIN_BLACKMAN_hARRIS, #wintype
+            0, #fc
+            samp_rate, #bw
+            "", #name
+            4,
+            None # parent
+        )
+        self.qtgui_freq_sink_x_0.set_update_time(0.10)
+        self.qtgui_freq_sink_x_0.set_y_axis((-140), 10)
+        self.qtgui_freq_sink_x_0.set_y_label('Relative Gain', 'dB')
+        self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
+        self.qtgui_freq_sink_x_0.enable_autoscale(False)
+        self.qtgui_freq_sink_x_0.enable_grid(False)
+        self.qtgui_freq_sink_x_0.set_fft_average(1.0)
+        self.qtgui_freq_sink_x_0.enable_axis_labels(True)
+        self.qtgui_freq_sink_x_0.enable_control_panel(False)
+        self.qtgui_freq_sink_x_0.set_fft_window_normalized(False)
+
+
+
+        labels = ['', '', '', '', '',
+            '', '', '', '', '']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ["blue", "red", "green", "black", "cyan",
+            "magenta", "yellow", "dark red", "dark green", "dark blue"]
+        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0]
+
+        for i in range(4):
+            if len(labels[i]) == 0:
+                self.qtgui_freq_sink_x_0.set_line_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_freq_sink_x_0.set_line_label(i, labels[i])
+            self.qtgui_freq_sink_x_0.set_line_width(i, widths[i])
+            self.qtgui_freq_sink_x_0.set_line_color(i, colors[i])
+            self.qtgui_freq_sink_x_0.set_line_alpha(i, alphas[i])
+
+        self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
+        self.blocks_file_source_0_0_0_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/home/henry/GRC/rf-channel-simulator/analogue/AM/mod_AM_snr_40.0/output_78.dat', True, 0, 0)
+        self.blocks_file_source_0_0_0_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_file_source_0_0_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/home/henry/GRC/rf-channel-simulator/analogue/AM/mod_AM_snr_40.0/output_70.dat', True, 0, 0)
+        self.blocks_file_source_0_0_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_file_source_0_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/home/henry/GRC/rf-channel-simulator/analogue/AM/mod_AM_snr_40.0/output_27.dat', True, 0, 0)
+        self.blocks_file_source_0_0.set_begin_tag(pmt.PMT_NIL)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_gr_complex*1, '/home/henry/GRC/rf-channel-simulator/analogue/AM/mod_AM_snr_40.0/output_1.dat', True, 0, 0)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.blocks_file_source_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.blocks_file_source_0, 0), (self.qtgui_time_sink_x_0, 0))
+        self.connect((self.blocks_file_source_0_0, 0), (self.qtgui_freq_sink_x_0, 1))
+        self.connect((self.blocks_file_source_0_0, 0), (self.qtgui_time_sink_x_0, 1))
+        self.connect((self.blocks_file_source_0_0_0, 0), (self.qtgui_freq_sink_x_0, 2))
+        self.connect((self.blocks_file_source_0_0_0, 0), (self.qtgui_time_sink_x_0, 2))
+        self.connect((self.blocks_file_source_0_0_0_0, 0), (self.qtgui_freq_sink_x_0, 3))
+        self.connect((self.blocks_file_source_0_0_0_0, 0), (self.qtgui_time_sink_x_0, 3))
 
 
     def closeEvent(self, event):
@@ -142,6 +195,7 @@ class file_read_test(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
+        self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
 
 
@@ -149,9 +203,6 @@ class file_read_test(gr.top_block, Qt.QWidget):
 
 def main(top_block_cls=file_read_test, options=None):
 
-    if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
-        style = gr.prefs().get_string('qtgui', 'style', 'raster')
-        Qt.QApplication.setGraphicsSystem(style)
     qapp = Qt.QApplication(sys.argv)
 
     tb = top_block_cls()

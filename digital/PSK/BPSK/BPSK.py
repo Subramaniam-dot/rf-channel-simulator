@@ -24,7 +24,6 @@ from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-import BPSK_epy_block_0 as epy_block_0  # embedded python block
 import sip
 
 
@@ -278,11 +277,6 @@ class BPSK(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.id_write_button_0 = _id_write_button_0_toggle_button = qtgui.MsgPushButton('write', 'pressed',1,"default","default")
-        self.id_write_button_0 = _id_write_button_0_toggle_button
-
-        self.top_layout.addWidget(_id_write_button_0_toggle_button)
-        self.epy_block_0 = epy_block_0.custom_file_writer(filename=filename, num_samples=n_samples)
         self.digital_constellation_modulator_0 = digital.generic_mod(
             constellation=bpsk,
             differential=True,
@@ -312,7 +306,6 @@ class BPSK(gr.top_block, Qt.QWidget):
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.id_write_button_0, 'pressed'), (self.epy_block_0, 'enable_write'))
         self.connect((self.analog_random_source_x_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
         self.connect((self.analog_random_source_x_0, 0), (self.digital_constellation_modulator_0, 0))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
@@ -323,7 +316,6 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 1))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.epy_block_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_time_sink_x_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_waterfall_sink_x_0, 0))
@@ -410,7 +402,6 @@ class BPSK(gr.top_block, Qt.QWidget):
 
     def set_filename(self, filename):
         self.filename = filename
-        self.epy_block_0.filename = self.filename
 
     def get_bpsk(self):
         return self.bpsk

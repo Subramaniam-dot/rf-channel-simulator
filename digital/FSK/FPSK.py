@@ -305,7 +305,7 @@ class FPSK(gr.top_block, Qt.QWidget):
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(2)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
-        self.blocks_add_const_vxx_0_0 = blocks.add_const_ff(1.5)
+        self.blocks_add_const_vxx_0_0 = blocks.add_const_ff(0)
         self.blocks_add_const_vxx_0 = blocks.add_const_ff((-0.5))
         self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(51, 52, 1000))), True)
 

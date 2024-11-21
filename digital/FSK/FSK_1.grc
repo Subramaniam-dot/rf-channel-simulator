@@ -269,7 +269,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: '1.5'
+    const: '0'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: float
@@ -368,7 +368,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [480, 424.0]
+    coordinate: [504, 416.0]
     rotation: 0
     state: enabled
 - name: blocks_unpack_k_bits_bb_0
@@ -402,7 +402,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [328, 448.0]
+    coordinate: [360, 448.0]
     rotation: 0
     state: enabled
 - name: channels_channel_model_0

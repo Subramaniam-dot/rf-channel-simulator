@@ -534,7 +534,7 @@ blocks:
     bus_structure: null
     coordinate: [1040, 672.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: id_write_button_0
   id: variable_qtgui_msg_push_button
   parameters:
@@ -552,7 +552,7 @@ blocks:
     bus_structure: null
     coordinate: [520, 640.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_eye_sink_x_0
   id: qtgui_eye_sink_x
   parameters:
