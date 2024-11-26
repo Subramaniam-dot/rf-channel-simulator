@@ -73,6 +73,18 @@ blocks:
     coordinate: [328, 88.0]
     rotation: 0
     state: enabled
+- name: SNR
+  id: variable
+  parameters:
+    comment: ''
+    value: '-20'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [952, 72.0]
+    rotation: 0
+    state: enabled
 - name: excess_bw
   id: variable
   parameters:
@@ -118,6 +130,30 @@ blocks:
     coordinate: [16, 112.0]
     rotation: 0
     state: enabled
+- name: freq_off_max
+  id: variable
+  parameters:
+    comment: ''
+    value: +samp_rate/2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1384, 880.0]
+    rotation: 0
+    state: enabled
+- name: freq_off_min
+  id: variable
+  parameters:
+    comment: ''
+    value: -samp_rate/2
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1368, 800.0]
+    rotation: 0
+    state: enabled
 - name: freq_offset
   id: variable_qtgui_range
   parameters:
@@ -137,6 +173,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [904, 8.0]
+    rotation: 0
+    state: disabled
+- name: freq_offset
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1280, 704.0]
     rotation: 0
     state: enabled
 - name: n_samples
@@ -171,6 +219,25 @@ blocks:
     bus_structure: null
     coordinate: [568, 8.0]
     rotation: 0
+    state: disabled
+- name: noise_volt
+  id: variable
+  parameters:
+    comment: ''
+    value: '(lambda x: signal_voltage / __import__(''math'').pow(10, x / 20))(SNR)
+
+
+
+
+
+
+      '
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1016, 80.0]
+    rotation: 0
     state: enabled
 - name: rrc_taps
   id: variable
@@ -194,6 +261,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [160, 8.0]
+    rotation: 0
+    state: enabled
+- name: signal_voltage
+  id: variable
+  parameters:
+    comment: ''
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1112, 88.0]
     rotation: 0
     state: enabled
 - name: sps
@@ -349,7 +428,21 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [824, 208.0]
+    coordinate: [776, 148.0]
+    rotation: 0
+    state: enabled
+- name: blocks_msgpair_to_var_0
+  id: blocks_msgpair_to_var
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    target: freq_offset
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1232, 932.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -386,6 +479,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [656, 224.0]
+    rotation: 0
+    state: enabled
+- name: blocks_rms_xx_0
+  id: blocks_rms_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.0001'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [880, 276.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle2_0
@@ -458,7 +568,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [712, 368.0]
+    coordinate: [728, 412.0]
     rotation: 0
     state: enabled
 - name: custom_file_writer_0
@@ -543,6 +653,156 @@ blocks:
     coordinate: [1040, 672.0]
     rotation: 0
     state: disabled
+- name: epy_block_0_0
+  id: epy_block
+  parameters:
+    _source_code: "import numpy as np\nfrom gnuradio import gr\nimport pmt\nimport\
+      \ logging\nclass blk(gr.sync_block):\n    \"\"\"Random Number Generator\"\"\"\
+      \n    def __init__(self, min_val=0, max_val=1):\n        gr.sync_block.__init__(\n\
+      \            self,\n            name='Random Number Generator',\n          \
+      \  in_sig=None,\n            out_sig=None)\n        \n        self.min_val =\
+      \ float(min_val)\n        self.max_val = float(max_val)\n        \n        #\
+      \ Message ports\n        self.message_port_register_in(pmt.intern('trigger'))\n\
+      \        self.message_port_register_out(pmt.intern('rand_out'))\n        self.set_msg_handler(pmt.intern('trigger'),\
+      \ self.handle_trigger)\n        \n        # Setup logging\n        logging.basicConfig(level=logging.INFO)\n\
+      \        self.logger = logging.getLogger(\"random_num_gen\")\n    \n    def\
+      \ set_min_val(self, min_val):\n        \"\"\"Callback to update minimum value\"\
+      \"\"\n        self.min_val = float(min_val)\n        \n    def set_max_val(self,\
+      \ max_val):\n        \"\"\"Callback to update maximum value\"\"\"\n        self.max_val\
+      \ = float(max_val)\n        \n    def handle_trigger(self, msg):\n        #\
+      \ Generate new random number\n        rand_num = np.random.uniform(self.min_val,\
+      \ self.max_val)\n        \n        # Create message\n        #msg = pmt.from_double(rand_num)\n\
+      \        msg = pmt.cons(pmt.PMT_NIL, pmt.from_double(rand_num))\n        # Send\
+      \ the message\n        self.message_port_pub(pmt.intern('rand_out'), msg)\n\
+      \        \n        # Log\n        self.logger.info(f\"Sending random number:\
+      \ {rand_num}\")\n\n    def work(self, input_items, output_items):\n        return\
+      \ 0\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    max_val: freq_off_max
+    maxoutbuf: '0'
+    min_val: freq_off_min
+    minoutbuf: '0'
+  states:
+    _io_cache: ('Random Number Generator', 'blk', [('min_val', '0'), ('max_val', '1')],
+      [('trigger', 'message', 1)], [('rand_out', 'message', 1)], 'Random Number Generator',
+      ['max_val', 'min_val'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [920, 912.0]
+    rotation: 0
+    state: true
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Block for Custom File Writer\n\"\"\"\n\n\
+      import numpy as np\nfrom gnuradio import gr\nimport pmt\nfrom collections import\
+      \ deque\nimport logging\nimport os\n\nclass blk(gr.sync_block):\n    def __init__(self,\
+      \ filename='output', num_samples=2048,\n             modulation_scheme=\"AM\"\
+      , snr=10000.0, freq_offset=1000.0, max_files=500):\n        gr.sync_block.__init__(\n\
+      \            self,\n            name='Custom File Writer',\n            in_sig=[np.complex64],\n\
+      \            out_sig=None)\n\n        # Register message ports\n        self.message_port_register_in(pmt.intern(\"\
+      enable_write\"))\n        self.set_msg_handler(pmt.intern(\"enable_write\"),\
+      \ self.handle_message)\n        # Add output message port for write signal\n\
+      \        self.message_port_register_out(pmt.intern(\"write\"))\n    \n     \
+      \   # Parameters\n        self._last_snr = None\n        self._last_freq_offset\
+      \ = None\n        self.snr = float(snr)\n        self.freq_offset = float(freq_offset)\n\
+      \        self.counter = 0\n        self.samples_per_file = int(num_samples)\n\
+      \        self.base_filename = str(filename)\n        self.modulation_scheme\
+      \ = str(modulation_scheme)\n        self.max_files = int(max_files)\n      \
+      \  self.buffer = deque()\n        self.done = False\n        self.enable_write\
+      \ = False\n        \n        # Setup logging\n        logging.basicConfig(level=logging.INFO)\n\
+      \        self.logger = logging.getLogger(\"custom_file_writer\")\n        \n\
+      \        # Setup initial directory\n        self.setup_directory()\n       \
+      \ \n        self.logger.info(f\"Initialized with SNR={self.snr}, freq_offset={self.freq_offset}\"\
+      )\n\n    def set_snr(self, snr):\n        \"\"\"SNR parameter callback\"\"\"\
+      \n        self.snr = float(snr)\n        self.logger.info(f\"SNR changed to:\
+      \ {self.snr}\")\n        self.check_parameters()\n\n    def set_freq_offset(self,\
+      \ freq_offset):\n        \"\"\"Frequency offset parameter callback\"\"\"\n \
+      \       self.freq_offset = float(freq_offset)\n        self.logger.info(f\"\
+      Frequency offset changed to: {self.freq_offset}\")\n        self.check_parameters()\n\
+      \n    def check_parameters(self):\n        \"\"\"Check if parameters have changed\"\
+      \"\"\n        if (self._last_snr != self.snr) or (self._last_freq_offset !=\
+      \ self.freq_offset):\n            self.logger.info(f\"New parameter combination\
+      \ detected - SNR: {self.snr}, Freq Offset: {self.freq_offset}\")\n         \
+      \   self._last_snr = self.snr\n            self._last_freq_offset = self.freq_offset\n\
+      \            self.counter = 0\n            self.done = False\n            self.setup_directory()\n\
+      \            return True\n        return False\n\n    def setup_directory(self):\n\
+      \        \"\"\"Create directory for current parameters\"\"\"\n        # Remove\
+      \ freq_offset from directory name since it changes for each file\n        self.dir_name\
+      \ = f\"mod_{self.modulation_scheme}_snr_{self.snr}\"\n        if not os.path.exists(self.dir_name):\n\
+      \            os.makedirs(self.dir_name)\n        self.filename = os.path.join(self.dir_name,\
+      \ self.base_filename)\n        self.logger.info(f\"Created directory: {self.dir_name}\"\
+      )\n\t    \n    def write_metadata_file(self, filename):\n        \"\"\"Write\
+      \ metadata file with current parameters\"\"\"\n        meta_filename = filename.replace(\"\
+      .dat\", \".txt\")\n        try:\n            with open(meta_filename, 'w') as\
+      \ meta_file:\n                meta_file.write(f\"Modulation Scheme = {self.modulation_scheme}\\\
+      n\")\n                meta_file.write(f\"Signal to Noise Ratio = {self.snr}\
+      \ dB\\n\")\n                meta_file.write(f\"Frequency Offset = {self.freq_offset}\
+      \ Hz\\n\")\n                meta_file.write(f\"Number of Samples = {self.samples_per_file}\\\
+      n\")\n                meta_file.write(f\"File Number = {self.counter + 1} of\
+      \ {self.max_files}\\n\")\n        except IOError as e:\n            self.logger.error(f\"\
+      Failed to write metadata file: {e}\")\n \n    def handle_message(self, msg):\n\
+      \        \"\"\"Handle enable_write messages\"\"\"\n        try:\n          \
+      \  if pmt.is_pair(msg):\n                value = pmt.to_python(pmt.cdr(msg))\n\
+      \            elif pmt.is_bool(msg):\n                value = pmt.to_python(msg)\n\
+      \            else:\n                value = bool(pmt.to_python(msg))\n     \
+      \       \n            self.enable_write = value\n            \n            if\
+      \ self.enable_write:\n                # Always check parameters when writing\
+      \ is enabled\n                self.check_parameters()\n                if not\
+      \ self.done:\n                    self.write_to_file()\n                else:\n\
+      \                    self.logger.info(f\"Already completed {self.max_files}\
+      \ files for current parameters\")\n        except Exception as e:\n        \
+      \    self.logger.error(f\"Error in message handler: {e}\")\n\n    def write_to_file(self):\n\
+      \        \"\"\"Write samples to file\"\"\"\n        if self.done or not self.enable_write:\n\
+      \            return\n            \n        if len(self.buffer) < self.samples_per_file:\n\
+      \            self.logger.warning(f\"Buffer contains only {len(self.buffer)}\
+      \ samples, need {self.samples_per_file}\")\n            return\n           \
+      \ \n        \n        \n        filename = f\"{self.filename}_{self.counter}.dat\"\
+      \n        try:\n            with open(filename, 'wb') as f:\n              \
+      \  samples_to_write = list(self.buffer)[:self.samples_per_file]\n          \
+      \      f.write(np.array(samples_to_write, dtype=np.complex64).tobytes())\n \
+      \           \n            self.write_metadata_file(filename)\n            \n\
+      \            \n            self.buffer.clear()\n            \n            #\
+      \ Send write trigger message before writing file\n            self.message_port_pub(pmt.intern(\"\
+      write\"), pmt.to_pmt(\"trigger\"))\n            \n            #for _ in range(self.samples_per_file):\n\
+      \            #    self.buffer.popleft()\n                \n            self.counter\
+      \ += 1\n            self.logger.info(f\"Writing to {self.dir_name}: File {self.counter}\
+      \ of {self.max_files}\")\n            \n            if self.counter >= self.max_files:\n\
+      \                self.done = True\n                self.enable_write = False\n\
+      \                self.logger.info(f\"Completed generating {self.max_files} files\
+      \ for {self.dir_name}\")\n        except IOError as e:\n            self.logger.error(f\"\
+      Failed to write data file: {e}\")\n\n    def work(self, input_items, output_items):\n\
+      \        \"\"\"Process incoming samples\"\"\"\n        if self.done:\n     \
+      \       return len(input_items[0])\n            \n        self.buffer.extend(input_items[0])\n\
+      \        \n        if len(self.buffer) >= self.samples_per_file and self.enable_write\
+      \ and not self.done:\n            self.write_to_file()\n            \n     \
+      \   return len(input_items[0])\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    filename: '"output"'
+    freq_offset: freq_offset
+    max_files: '100'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    modulation_scheme: '"64QAM"'
+    num_samples: '2048'
+    snr: SNR
+  states:
+    _io_cache: ('Custom File Writer', 'blk', [('filename', "'output'"), ('num_samples',
+      '2048'), ('modulation_scheme', "'AM'"), ('snr', '10000.0'), ('freq_offset',
+      '1000.0'), ('max_files', '500')], [('0', 'complex', 1), ('enable_write', 'message',
+      1)], [('write', 'message', 1)], '', ['filename', 'freq_offset', 'max_files',
+      'modulation_scheme', 'snr'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1000, 668.0]
+    rotation: 0
+    state: enabled
 - name: id_write_button_0
   id: variable_qtgui_msg_push_button
   parameters:
@@ -561,6 +821,24 @@ blocks:
     coordinate: [520, 640.0]
     rotation: 0
     state: disabled
+- name: id_write_button_0_0
+  id: variable_qtgui_msg_push_button
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    msgName: pressed
+    relBackgroundColor: default
+    relFontColor: default
+    type: real
+    value: freq_offset
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [592, 844.0]
+    rotation: 0
+    state: enabled
 - name: qtgui_const_sink_x_0
   id: qtgui_const_sink_x
   parameters:
@@ -830,6 +1108,69 @@ blocks:
     coordinate: [1000, 336.0]
     rotation: 0
     state: enabled
+- name: qtgui_number_sink_0
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_HORIZ
+    gui_hint: ''
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '1'
+    min: '-1'
+    name: '""'
+    nconnections: '1'
+    type: float
+    unit1: ''
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1080, 248.0]
+    rotation: 0
+    state: enabled
 - name: qtgui_time_sink_x_0
   id: qtgui_time_sink_x
   parameters:
@@ -926,7 +1267,7 @@ blocks:
     bus_structure: null
     coordinate: [1000, 464.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_time_sink_x_1
   id: qtgui_time_sink_x
   parameters:
@@ -1021,7 +1362,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1040, 208.0]
+    coordinate: [952, 148.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_2
@@ -1181,7 +1522,7 @@ blocks:
     bus_structure: null
     coordinate: [1000, 560.0]
     rotation: 0
-    state: enabled
+    state: disabled
 
 connections:
 - [analog_random_source_x_0, '0', blocks_char_to_float_0_0, '0']
@@ -1195,6 +1536,8 @@ connections:
 - [blocks_float_to_complex_0, '0', qtgui_time_sink_x_1, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_repeat_0, '0']
 - [blocks_repeat_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_rms_xx_0, '0', qtgui_number_sink_0, '0']
+- [blocks_throttle2_0, '0', blocks_rms_xx_0, '0']
 - [blocks_throttle2_0, '0', channels_channel_model_0, '0']
 - [blocks_throttle2_0, '0', qtgui_const_sink_x_0, '0']
 - [blocks_throttle2_0, '0', qtgui_eye_sink_x_0, '0']
@@ -1204,12 +1547,16 @@ connections:
 - [blocks_unpack_k_bits_bb_0, '0', blocks_uchar_to_float_0, '0']
 - [channels_channel_model_0, '0', custom_file_writer_0, '0']
 - [channels_channel_model_0, '0', epy_block_0, '0']
+- [channels_channel_model_0, '0', epy_block_1, '0']
 - [channels_channel_model_0, '0', qtgui_freq_sink_x_0, '0']
 - [channels_channel_model_0, '0', qtgui_time_sink_x_0, '0']
 - [channels_channel_model_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [digital_constellation_modulator_0, '0', blocks_throttle2_0, '0']
+- [epy_block_0_0, rand_out, blocks_msgpair_to_var_0, inpair]
+- [epy_block_1, write, epy_block_0_0, trigger]
 - [id_write_button_0, pressed, epy_block_0, enable_write]
+- [id_write_button_0_0, pressed, epy_block_1, enable_write]
 
 metadata:
   file_format: 1
-  grc_version: 3.10.9.2
+  grc_version: 3.10.11.0

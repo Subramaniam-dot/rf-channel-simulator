@@ -54,7 +54,19 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1280, 480.0]
+    coordinate: [1152, 32.0]
+    rotation: 0
+    state: disabled
+- name: SNR
+  id: variable
+  parameters:
+    comment: ''
+    value: '20'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1040, 24.0]
     rotation: 0
     state: enabled
 - name: excess_bw
@@ -203,6 +215,25 @@ blocks:
     bus_structure: null
     coordinate: [1032, 32.0]
     rotation: 0
+    state: disabled
+- name: noise_volt
+  id: variable
+  parameters:
+    comment: ''
+    value: '(lambda x: signal_voltage / __import__(''math'').pow(10, x / 20))(SNR)
+
+
+
+
+
+
+      '
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1104, 32.0]
+    rotation: 0
     state: enabled
 - name: qpsk
   id: variable_constellation
@@ -246,6 +277,18 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [160, 8.0]
+    rotation: 0
+    state: enabled
+- name: signal_voltage
+  id: variable
+  parameters:
+    comment: ''
+    value: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1200, 40.0]
     rotation: 0
     state: enabled
 - name: sps
@@ -452,6 +495,23 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [656, 224.0]
+    rotation: 0
+    state: enabled
+- name: blocks_rms_xx_0
+  id: blocks_rms_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.0001'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1024, 324.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle2_0
@@ -866,7 +926,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [992, 432.0]
+    coordinate: [1000, 568.0]
     rotation: 0
     state: enabled
 - name: qtgui_eye_sink_x_0
@@ -1043,7 +1103,70 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1040, 324.0]
+    coordinate: [1056, 476.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_number_sink_0
+  id: qtgui_number_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    autoscale: 'False'
+    avg: '0'
+    color1: ("black", "black")
+    color10: ("black", "black")
+    color2: ("black", "black")
+    color3: ("black", "black")
+    color4: ("black", "black")
+    color5: ("black", "black")
+    color6: ("black", "black")
+    color7: ("black", "black")
+    color8: ("black", "black")
+    color9: ("black", "black")
+    comment: ''
+    factor1: '1'
+    factor10: '1'
+    factor2: '1'
+    factor3: '1'
+    factor4: '1'
+    factor5: '1'
+    factor6: '1'
+    factor7: '1'
+    factor8: '1'
+    factor9: '1'
+    graph_type: qtgui.NUM_GRAPH_HORIZ
+    gui_hint: ''
+    label1: ''
+    label10: ''
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    label6: ''
+    label7: ''
+    label8: ''
+    label9: ''
+    max: '1'
+    min: '-1'
+    name: '""'
+    nconnections: '1'
+    type: float
+    unit1: ''
+    unit10: ''
+    unit2: ''
+    unit3: ''
+    unit4: ''
+    unit5: ''
+    unit6: ''
+    unit7: ''
+    unit8: ''
+    unit9: ''
+    update_time: '0.10'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1224, 296.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -1411,6 +1534,8 @@ connections:
 - [blocks_float_to_complex_0, '0', qtgui_time_sink_x_1, '0']
 - [blocks_multiply_const_vxx_0, '0', blocks_repeat_0, '0']
 - [blocks_repeat_0, '0', blocks_float_to_complex_0, '0']
+- [blocks_rms_xx_0, '0', qtgui_number_sink_0, '0']
+- [blocks_throttle2_0, '0', blocks_rms_xx_0, '0']
 - [blocks_throttle2_0, '0', channels_channel_model_0, '0']
 - [blocks_throttle2_0, '0', qtgui_eye_sink_x_0, '0']
 - [blocks_throttle2_0, '0', qtgui_time_sink_x_1, '1']

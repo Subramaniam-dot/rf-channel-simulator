@@ -5,18 +5,18 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: OOK
-# Author: Henry Giddens
+# Title: FSK
 # GNU Radio version: 3.10.11.0
 
 from PyQt5 import Qt
 from gnuradio import qtgui
 from PyQt5 import QtCore
-from gnuradio import analog
 from gnuradio import blocks
 import numpy
 from gnuradio import channels
 from gnuradio.filter import firdes
+from gnuradio import digital
+from gnuradio import filter
 from gnuradio import gr
 from gnuradio.fft import window
 import sys
@@ -25,19 +25,19 @@ from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
-import OOK_epy_block_0_0 as epy_block_0_0  # embedded python block
-import OOK_epy_block_1 as epy_block_1  # embedded python block
+import FSK_epy_block_0_0 as epy_block_0_0  # embedded python block
+import FSK_epy_block_1 as epy_block_1  # embedded python block
 import sip
 import threading
 
 
 
-class OOK(gr.top_block, Qt.QWidget):
+class FSK(gr.top_block, Qt.QWidget):
 
     def __init__(self):
-        gr.top_block.__init__(self, "OOK", catch_exceptions=True)
+        gr.top_block.__init__(self, "FSK", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("OOK")
+        self.setWindowTitle("FSK")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -55,7 +55,7 @@ class OOK(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "OOK")
+        self.settings = Qt.QSettings("gnuradio/flowgraphs", "FSK")
 
         try:
             geometry = self.settings.value("geometry")
@@ -68,11 +68,14 @@ class OOK(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.signal_voltage = signal_voltage = 0.5
+        self.sps = sps = 16
+        self.signal_voltage = signal_voltage = 1
         self.samp_rate = samp_rate = 32000
+        self.excess_bw = excess_bw = 0.35
         self.SNR = SNR = 20
         self.time_offset = time_offset = 1.0001
         self.taps = taps = [1.0 + 0.0j, ]
+        self.rrc_taps = rrc_taps = firdes.root_raised_cosine(1.0,samp_rate,samp_rate/sps,excess_bw,11*sps)
         self.noise_volt = noise_volt = (lambda x: signal_voltage / __import__('math').pow(10, x / 20))(SNR)
 
 
@@ -83,7 +86,9 @@ class OOK(gr.top_block, Qt.QWidget):
         self.freq_offset = freq_offset = 1000
         self.freq_off_min = freq_off_min = -samp_rate/2
         self.freq_off_max = freq_off_max = +samp_rate/2
-        self.filename = filename = "OOK"
+        self.filename = filename = "FSK"
+        self.bpsk = bpsk = digital.constellation_bpsk().base()
+        self.bpsk.set_npwr(0.000)
         self.M = M = 2
 
         ##################################################
@@ -93,19 +98,27 @@ class OOK(gr.top_block, Qt.QWidget):
         self._time_offset_range = qtgui.Range(0.999, 1.001, 0.0001, 1.0001, 200)
         self._time_offset_win = qtgui.RangeWidget(self._time_offset_range, self.set_time_offset, "Channel: Timing Offset", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._time_offset_win)
-        self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
+        self.root_raised_cosine_filter_0 = filter.fir_filter_fff(
+            1,
+            firdes.root_raised_cosine(
+                1,
+                samp_rate,
+                sps,
+                0.75,
+                25))
+        self.qtgui_time_sink_x_1 = qtgui.time_sink_c(
             1024, #size
             samp_rate, #samp_rate
-            'Raw and Modulated Data', #name
+            "", #name
             2, #number of inputs
             None # parent
         )
         self.qtgui_time_sink_x_1.set_update_time(0.10)
-        self.qtgui_time_sink_x_1.set_y_axis(-M/2-1, M/2+1)
+        self.qtgui_time_sink_x_1.set_y_axis(-2, 2)
 
         self.qtgui_time_sink_x_1.set_y_label('Amplitude', "")
 
-        self.qtgui_time_sink_x_1.enable_tags(False)
+        self.qtgui_time_sink_x_1.enable_tags(True)
         self.qtgui_time_sink_x_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
         self.qtgui_time_sink_x_1.enable_autoscale(False)
         self.qtgui_time_sink_x_1.enable_grid(False)
@@ -114,7 +127,7 @@ class OOK(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_1.enable_stem_plot(False)
 
 
-        labels = ['Digital Data', 'OOK Modulated Waveform', 'Signal 3', 'Signal 4', 'Signal 5',
+        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
             'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
         widths = [1, 1, 1, 1, 1,
             1, 1, 1, 1, 1]
@@ -128,9 +141,12 @@ class OOK(gr.top_block, Qt.QWidget):
             -1, -1, -1, -1, -1]
 
 
-        for i in range(2):
+        for i in range(4):
             if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_1.set_line_label(i, "Data {0}".format(i))
+                if (i % 2 == 0):
+                    self.qtgui_time_sink_x_1.set_line_label(i, "Re{{Data {0}}}".format(i/2))
+                else:
+                    self.qtgui_time_sink_x_1.set_line_label(i, "Im{{Data {0}}}".format(i/2))
             else:
                 self.qtgui_time_sink_x_1.set_line_label(i, labels[i])
             self.qtgui_time_sink_x_1.set_line_width(i, widths[i])
@@ -220,11 +236,11 @@ class OOK(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.id_write_button_0 = _id_write_button_0_toggle_button = qtgui.MsgPushButton('id_write_button_0', 'pressed',freq_offset,"default","default")
-        self.id_write_button_0 = _id_write_button_0_toggle_button
+        self.id_write_button = _id_write_button_toggle_button = qtgui.MsgPushButton('id_write_button', 'pressed',freq_offset,"default","default")
+        self.id_write_button = _id_write_button_toggle_button
 
-        self.top_layout.addWidget(_id_write_button_0_toggle_button)
-        self.epy_block_1 = epy_block_1.blk(filename="output", num_samples=2048, modulation_scheme="OOK", snr=SNR, freq_offset=freq_offset, max_files=100)
+        self.top_layout.addWidget(_id_write_button_toggle_button)
+        self.epy_block_1 = epy_block_1.blk(filename="output", num_samples=2048, modulation_scheme="FSK", snr=SNR, freq_offset=freq_offset, max_files=100)
         self.epy_block_0_0 = epy_block_0_0.blk(min_val=freq_off_min, max_val=freq_off_max)
         self.channels_channel_model_0 = channels.channel_model(
             noise_voltage=noise_volt,
@@ -233,16 +249,18 @@ class OOK(gr.top_block, Qt.QWidget):
             taps=taps,
             noise_seed=0,
             block_tags=False)
-        self.blocks_throttle2_0_1 = blocks.throttle( gr.sizeof_float*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_vco_c_0 = blocks.vco_c(samp_rate, (2*3.14*samp_rate/sps*2), 1)
+        self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(8)
+        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.blocks_rms_xx_0 = blocks.rms_cf(0.0001)
-        self.blocks_repeat_0 = blocks.repeat(gr.sizeof_float*1, 50)
-        self.blocks_multiply_xx_0 = blocks.multiply_vff(1)
+        self.blocks_repeat_0 = blocks.repeat(gr.sizeof_float*1, sps)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(2)
         self.blocks_msgpair_to_var_0 = blocks.msg_pair_to_var(self.set_freq_offset)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
-        self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_COS_WAVE, 1e3, 1, 0, 0)
-        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(0, M, 10000))), True)
-        self.analog_const_source_x_0 = analog.sig_source_f(0, analog.GR_CONST_WAVE, 0, 0, 0)
+        self.blocks_add_const_vxx_0_0 = blocks.add_const_ff(1)
+        self.blocks_add_const_vxx_0 = blocks.add_const_ff((-0.5))
+        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(0, 256, 1000))), True)
 
 
         ##################################################
@@ -250,30 +268,42 @@ class OOK(gr.top_block, Qt.QWidget):
         ##################################################
         self.msg_connect((self.epy_block_0_0, 'rand_out'), (self.blocks_msgpair_to_var_0, 'inpair'))
         self.msg_connect((self.epy_block_1, 'write'), (self.epy_block_0_0, 'trigger'))
-        self.msg_connect((self.id_write_button_0, 'pressed'), (self.epy_block_1, 'enable_write'))
-        self.connect((self.analog_const_source_x_0, 0), (self.blocks_float_to_complex_0, 1))
-        self.connect((self.analog_random_source_x_0, 0), (self.blocks_char_to_float_0, 0))
-        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0_1, 0))
+        self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_1, 'enable_write'))
+        self.connect((self.analog_random_source_x_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
+        self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_add_const_vxx_0_0, 0))
+        self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.blocks_add_const_vxx_0_0, 0), (self.root_raised_cosine_filter_0, 0))
         self.connect((self.blocks_char_to_float_0, 0), (self.blocks_repeat_0, 0))
-        self.connect((self.blocks_float_to_complex_0, 0), (self.blocks_rms_xx_0, 0))
-        self.connect((self.blocks_float_to_complex_0, 0), (self.channels_channel_model_0, 0))
-        self.connect((self.blocks_multiply_xx_0, 0), (self.blocks_float_to_complex_0, 0))
-        self.connect((self.blocks_multiply_xx_0, 0), (self.qtgui_time_sink_x_1, 1))
-        self.connect((self.blocks_repeat_0, 0), (self.blocks_multiply_xx_0, 1))
-        self.connect((self.blocks_repeat_0, 0), (self.qtgui_time_sink_x_1, 0))
+        self.connect((self.blocks_float_to_complex_0, 0), (self.qtgui_time_sink_x_1, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_float_to_complex_0, 0))
+        self.connect((self.blocks_repeat_0, 0), (self.blocks_add_const_vxx_0, 0))
         self.connect((self.blocks_rms_xx_0, 0), (self.qtgui_number_sink_0, 0))
-        self.connect((self.blocks_throttle2_0_1, 0), (self.blocks_multiply_xx_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.blocks_rms_xx_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 1))
+        self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
+        self.connect((self.blocks_vco_c_0, 0), (self.blocks_throttle2_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.epy_block_1, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0, 0))
+        self.connect((self.root_raised_cosine_filter_0, 0), (self.blocks_vco_c_0, 0))
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "OOK")
+        self.settings = Qt.QSettings("gnuradio/flowgraphs", "FSK")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
 
         event.accept()
+
+    def get_sps(self):
+        return self.sps
+
+    def set_sps(self, sps):
+        self.sps = sps
+        self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
+        self.blocks_repeat_0.set_interpolation(self.sps)
+        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, self.sps, 0.75, 25))
 
     def get_signal_voltage(self):
         return self.signal_voltage
@@ -295,10 +325,18 @@ class OOK(gr.top_block, Qt.QWidget):
         self.samp_rate = samp_rate
         self.set_freq_off_max(+self.samp_rate/2)
         self.set_freq_off_min(-self.samp_rate/2)
-        self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
-        self.blocks_throttle2_0_1.set_sample_rate(self.samp_rate)
+        self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
+        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
+        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, self.sps, 0.75, 25))
+
+    def get_excess_bw(self):
+        return self.excess_bw
+
+    def set_excess_bw(self, excess_bw):
+        self.excess_bw = excess_bw
+        self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
 
     def get_SNR(self):
         return self.SNR
@@ -328,6 +366,12 @@ class OOK(gr.top_block, Qt.QWidget):
         self.taps = taps
         self.channels_channel_model_0.set_taps(self.taps)
 
+    def get_rrc_taps(self):
+        return self.rrc_taps
+
+    def set_rrc_taps(self, rrc_taps):
+        self.rrc_taps = rrc_taps
+
     def get_noise_volt(self):
         return self.noise_volt
 
@@ -348,7 +392,7 @@ class OOK(gr.top_block, Qt.QWidget):
         self.freq_offset = freq_offset
         self.channels_channel_model_0.set_frequency_offset(self.freq_offset)
         self.epy_block_1.freq_offset = self.freq_offset
-        self.id_write_button_0.set_new_msg(self.freq_offset)
+        self.id_write_button.set_new_msg(self.freq_offset)
 
     def get_freq_off_min(self):
         return self.freq_off_min
@@ -370,17 +414,22 @@ class OOK(gr.top_block, Qt.QWidget):
     def set_filename(self, filename):
         self.filename = filename
 
+    def get_bpsk(self):
+        return self.bpsk
+
+    def set_bpsk(self, bpsk):
+        self.bpsk = bpsk
+
     def get_M(self):
         return self.M
 
     def set_M(self, M):
         self.M = M
-        self.qtgui_time_sink_x_1.set_y_axis(-self.M/2-1, self.M/2+1)
 
 
 
 
-def main(top_block_cls=OOK, options=None):
+def main(top_block_cls=FSK, options=None):
 
     qapp = Qt.QApplication(sys.argv)
 

@@ -68,21 +68,27 @@ class QPSK(gr.top_block, Qt.QWidget):
         # Variables
         ##################################################
         self.sps = sps = 16
+        self.signal_voltage = signal_voltage = 1
         self.samp_rate = samp_rate = 32000
-        self.noise_volt = noise_volt = 0.001
         self.excess_bw = excess_bw = 0.35
+        self.SNR = SNR = 20
         self.time_offset = time_offset = 1.0001
         self.taps = taps = [1.0 + 0.0j, ]
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(1.0,samp_rate,samp_rate/sps,excess_bw,11*sps)
         self.qpsk = qpsk = digital.constellation_calcdist([1+1j, -1+1j, -1-1j, 1-1j], [0, 1, 2, 3],
         4, 1, digital.constellation.AMPLITUDE_NORMALIZATION).base()
         self.qpsk.set_npwr(0.000)
+        self.noise_volt = noise_volt = (lambda x: signal_voltage / __import__('math').pow(10, x / 20))(SNR)
+
+
+
+
+
         self.n_samples = n_samples = 1024
         self.freq_offset = freq_offset = 1000
         self.freq_off_min = freq_off_min = -samp_rate/2
         self.freq_off_max = freq_off_max = +samp_rate/2
         self.filename = filename = "QPSK"
-        self.SNR = SNR = 10*(lambda x: __import__('math').log(x, 10))(1**2/noise_volt**2)
         self.M = M = 2
 
         ##################################################
@@ -143,6 +149,39 @@ class QPSK(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_1_win = sip.wrapinstance(self.qtgui_time_sink_x_1.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_1_win)
+        self.qtgui_number_sink_0 = qtgui.number_sink(
+            gr.sizeof_float,
+            0,
+            qtgui.NUM_GRAPH_HORIZ,
+            1,
+            None # parent
+        )
+        self.qtgui_number_sink_0.set_update_time(0.10)
+        self.qtgui_number_sink_0.set_title("")
+
+        labels = ['', '', '', '', '',
+            '', '', '', '', '']
+        units = ['', '', '', '', '',
+            '', '', '', '', '']
+        colors = [("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"),
+            ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black"), ("black", "black")]
+        factor = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+
+        for i in range(1):
+            self.qtgui_number_sink_0.set_min(i, -1)
+            self.qtgui_number_sink_0.set_max(i, 1)
+            self.qtgui_number_sink_0.set_color(i, colors[i][0], colors[i][1])
+            if len(labels[i]) == 0:
+                self.qtgui_number_sink_0.set_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_number_sink_0.set_label(i, labels[i])
+            self.qtgui_number_sink_0.set_unit(i, units[i])
+            self.qtgui_number_sink_0.set_factor(i, factor[i])
+
+        self.qtgui_number_sink_0.enable_autoscale(False)
+        self._qtgui_number_sink_0_win = sip.wrapinstance(self.qtgui_number_sink_0.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_number_sink_0_win)
         self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -254,6 +293,7 @@ class QPSK(gr.top_block, Qt.QWidget):
             block_tags=False)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_gr_complex*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
+        self.blocks_rms_xx_0 = blocks.rms_cf(0.0001)
         self.blocks_repeat_0 = blocks.repeat(gr.sizeof_float*1, sps)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(2)
         self.blocks_msgpair_to_var_0 = blocks.msg_pair_to_var(self.set_freq_offset)
@@ -276,6 +316,8 @@ class QPSK(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_float_to_complex_0, 0), (self.qtgui_time_sink_x_1, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_repeat_0, 0))
         self.connect((self.blocks_repeat_0, 0), (self.blocks_float_to_complex_0, 0))
+        self.connect((self.blocks_rms_xx_0, 0), (self.qtgui_number_sink_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.blocks_rms_xx_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 1))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
@@ -301,6 +343,19 @@ class QPSK(gr.top_block, Qt.QWidget):
         self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
         self.blocks_repeat_0.set_interpolation(self.sps)
 
+    def get_signal_voltage(self):
+        return self.signal_voltage
+
+    def set_signal_voltage(self, signal_voltage):
+        self.signal_voltage = signal_voltage
+        self.set_noise_volt((lambda x: self.signal_voltage / __import__('math').pow(10, x / 20))(self.SNR)
+
+
+
+
+
+        )
+
     def get_samp_rate(self):
         return self.samp_rate
 
@@ -313,20 +368,26 @@ class QPSK(gr.top_block, Qt.QWidget):
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
 
-    def get_noise_volt(self):
-        return self.noise_volt
-
-    def set_noise_volt(self, noise_volt):
-        self.noise_volt = noise_volt
-        self.set_SNR(10*(lambda x: __import__('math').log(x, 10))(1**2/self.noise_volt**2))
-        self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
-
     def get_excess_bw(self):
         return self.excess_bw
 
     def set_excess_bw(self, excess_bw):
         self.excess_bw = excess_bw
         self.set_rrc_taps(firdes.root_raised_cosine(1.0,self.samp_rate,self.samp_rate/self.sps,self.excess_bw,11*self.sps))
+
+    def get_SNR(self):
+        return self.SNR
+
+    def set_SNR(self, SNR):
+        self.SNR = SNR
+        self.set_noise_volt((lambda x: self.signal_voltage / __import__('math').pow(10, x / 20))(self.SNR)
+
+
+
+
+
+        )
+        self.epy_block_1.snr = self.SNR
 
     def get_time_offset(self):
         return self.time_offset
@@ -353,6 +414,13 @@ class QPSK(gr.top_block, Qt.QWidget):
 
     def set_qpsk(self, qpsk):
         self.qpsk = qpsk
+
+    def get_noise_volt(self):
+        return self.noise_volt
+
+    def set_noise_volt(self, noise_volt):
+        self.noise_volt = noise_volt
+        self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
 
     def get_n_samples(self):
         return self.n_samples
@@ -388,13 +456,6 @@ class QPSK(gr.top_block, Qt.QWidget):
 
     def set_filename(self, filename):
         self.filename = filename
-
-    def get_SNR(self):
-        return self.SNR
-
-    def set_SNR(self, SNR):
-        self.SNR = SNR
-        self.epy_block_1.snr = self.SNR
 
     def get_M(self):
         return self.M
