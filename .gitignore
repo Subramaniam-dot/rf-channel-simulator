@@ -12,3 +12,6 @@ mod_*/
 
 #Ignore all numbered .txt files (i.e the meta data)
 *_[0-9]*.txt
+
+#Ignore zip files
+*./zip
