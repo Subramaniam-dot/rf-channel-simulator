@@ -49,7 +49,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '20'
+    value: '0'
   states:
     bus_sink: false
     bus_source: false
@@ -312,6 +312,25 @@ blocks:
     coordinate: [736, 8.0]
     rotation: 0
     state: enabled
+- name: analog_noise_source_x_0
+  id: analog_noise_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: noise_volt
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    noise_type: analog.GR_GAUSSIAN
+    seed: '0'
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [712, 432.0]
+    rotation: 0
+    state: enabled
 - name: analog_random_source_x_0
   id: analog_random_source_x
   parameters:
@@ -371,6 +390,24 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [352, 280.0]
+    rotation: 0
+    state: enabled
+- name: blocks_add_xx_0
+  id: blocks_add_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '2'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [936, 536.0]
     rotation: 0
     state: enabled
 - name: blocks_char_to_float_0
@@ -487,7 +524,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [832, 460.0]
+    coordinate: [816, 344.0]
     rotation: 0
     state: enabled
 - name: blocks_throttle2_0
@@ -553,7 +590,7 @@ blocks:
     freq_offset: freq_offset
     maxoutbuf: '0'
     minoutbuf: '0'
-    noise_voltage: noise_volt
+    noise_voltage: '0'
     seed: '0'
     taps: taps
   states:
@@ -1005,7 +1042,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1016, 508.0]
+    coordinate: [1096, 504.0]
     rotation: 0
     state: enabled
 - name: qtgui_number_sink_0
@@ -1068,7 +1105,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1008, 376.0]
+    coordinate: [1000, 320.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -1425,12 +1462,14 @@ blocks:
     state: disabled
 
 connections:
+- [analog_noise_source_x_0, '0', blocks_add_xx_0, '0']
 - [analog_random_source_x_0, '0', blocks_char_to_float_0_0, '0']
 - [analog_random_source_x_0, '0', blocks_unpack_k_bits_bb_0, '0']
 - [analog_random_source_x_0, '0', digital_constellation_modulator_0, '0']
 - [analog_sig_source_x_0, '0', blocks_char_to_float_0, '0']
 - [analog_sig_source_x_0, '0', digital_constellation_modulator_0, '0']
 - [blocks_add_const_vxx_0, '0', blocks_multiply_const_vxx_0, '0']
+- [blocks_add_xx_0, '0', qtgui_freq_sink_x_0, '0']
 - [blocks_char_to_float_0, '0', blocks_add_const_vxx_0, '0']
 - [blocks_char_to_float_0_0, '0', qtgui_time_sink_x_2, '0']
 - [blocks_float_to_complex_0, '0', qtgui_time_sink_x_1, '0']
@@ -1444,10 +1483,10 @@ connections:
 - [blocks_uchar_to_float_0, '0', blocks_add_const_vxx_0, '0']
 - [blocks_unpack_k_bits_bb_0, '0', blocks_char_to_float_0, '0']
 - [blocks_unpack_k_bits_bb_0, '0', blocks_uchar_to_float_0, '0']
+- [channels_channel_model_0, '0', blocks_add_xx_0, '1']
 - [channels_channel_model_0, '0', custom_file_writer_0, '0']
 - [channels_channel_model_0, '0', epy_block_0, '0']
 - [channels_channel_model_0, '0', epy_block_1, '0']
-- [channels_channel_model_0, '0', qtgui_freq_sink_x_0, '0']
 - [channels_channel_model_0, '0', qtgui_time_sink_x_0, '0']
 - [channels_channel_model_0, '0', qtgui_waterfall_sink_x_0, '0']
 - [digital_constellation_modulator_0, '0', blocks_throttle2_0, '0']
@@ -1458,4 +1497,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.11.0
+  grc_version: 3.10.9.2

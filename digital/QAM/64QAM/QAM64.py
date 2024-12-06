@@ -6,7 +6,7 @@
 #
 # GNU Radio Python Flow Graph
 # Title: 64 QAM
-# GNU Radio version: 3.10.11.0
+# GNU Radio version: 3.10.9.2
 
 from PyQt5 import Qt
 from gnuradio import qtgui
@@ -27,7 +27,6 @@ from gnuradio import eng_notation
 import QAM64_epy_block_0_0 as epy_block_0_0  # embedded python block
 import QAM64_epy_block_1 as epy_block_1  # embedded python block
 import sip
-import threading
 
 
 
@@ -54,7 +53,7 @@ class QAM64(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "QAM64")
+        self.settings = Qt.QSettings("GNU Radio", "QAM64")
 
         try:
             geometry = self.settings.value("geometry")
@@ -62,7 +61,6 @@ class QAM64(gr.top_block, Qt.QWidget):
                 self.restoreGeometry(geometry)
         except BaseException as exc:
             print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
-        self.flowgraph_started = threading.Event()
 
         ##################################################
         # Variables
@@ -71,7 +69,7 @@ class QAM64(gr.top_block, Qt.QWidget):
         self.signal_voltage = signal_voltage = 1
         self.samp_rate = samp_rate = 32000
         self.excess_bw = excess_bw = 0.35
-        self.SNR = SNR = -20
+        self.SNR = SNR = 20
         self.time_offset = time_offset = 1.0001
         self.taps = taps = [1.0 + 0.0j, ]
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(1.0,samp_rate,samp_rate/sps,excess_bw,11*sps)
@@ -228,47 +226,6 @@ class QAM64(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(2, 4):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self.qtgui_const_sink_x_0 = qtgui.const_sink_c(
-            (1024*4*2), #size
-            "", #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_const_sink_x_0.set_update_time(0.10)
-        self.qtgui_const_sink_x_0.set_y_axis((-2), 2)
-        self.qtgui_const_sink_x_0.set_x_axis((-2), 2)
-        self.qtgui_const_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, "")
-        self.qtgui_const_sink_x_0.enable_autoscale(False)
-        self.qtgui_const_sink_x_0.enable_grid(False)
-        self.qtgui_const_sink_x_0.enable_axis_labels(True)
-
-
-        labels = ['', '', '', '', '',
-            '', '', '', '', '']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ["blue", "red", "green", "black", "cyan",
-            "magenta", "yellow", "dark red", "dark green", "dark blue"]
-        styles = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        markers = [0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0]
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_const_sink_x_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_const_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_const_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_const_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_const_sink_x_0.set_line_style(i, styles[i])
-            self.qtgui_const_sink_x_0.set_line_marker(i, markers[i])
-            self.qtgui_const_sink_x_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_const_sink_x_0_win = sip.wrapinstance(self.qtgui_const_sink_x_0.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_const_sink_x_0_win)
         self.id_write_button_0_0 = _id_write_button_0_0_toggle_button = qtgui.MsgPushButton('id_write_button_0_0', 'pressed',freq_offset,"default","default")
         self.id_write_button_0_0 = _id_write_button_0_0_toggle_button
 
@@ -300,7 +257,7 @@ class QAM64(gr.top_block, Qt.QWidget):
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
         self.blocks_add_const_vxx_0 = blocks.add_const_ff((-0.5))
-        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(0, 256, 10000))), True)
+        self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(0, 256, 100000))), True)
 
 
         ##################################################
@@ -319,7 +276,6 @@ class QAM64(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_rms_xx_0, 0), (self.qtgui_number_sink_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_rms_xx_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.qtgui_const_sink_x_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 1))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.epy_block_1, 0))
@@ -328,7 +284,7 @@ class QAM64(gr.top_block, Qt.QWidget):
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "QAM64")
+        self.settings = Qt.QSettings("GNU Radio", "QAM64")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -473,7 +429,6 @@ def main(top_block_cls=QAM64, options=None):
     tb = top_block_cls()
 
     tb.start()
-    tb.flowgraph_started.set()
 
     tb.show()
 

@@ -6,11 +6,12 @@
 #
 # GNU Radio Python Flow Graph
 # Title: BPSK
-# GNU Radio version: 3.10.11.0
+# GNU Radio version: 3.10.9.2
 
 from PyQt5 import Qt
 from gnuradio import qtgui
 from PyQt5 import QtCore
+from gnuradio import analog
 from gnuradio import blocks
 import numpy
 from gnuradio import channels
@@ -27,7 +28,6 @@ from gnuradio import eng_notation
 import BPSK_epy_block_0_0 as epy_block_0_0  # embedded python block
 import BPSK_epy_block_1 as epy_block_1  # embedded python block
 import sip
-import threading
 
 
 
@@ -54,7 +54,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "BPSK")
+        self.settings = Qt.QSettings("GNU Radio", "BPSK")
 
         try:
             geometry = self.settings.value("geometry")
@@ -62,7 +62,6 @@ class BPSK(gr.top_block, Qt.QWidget):
                 self.restoreGeometry(geometry)
         except BaseException as exc:
             print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
-        self.flowgraph_started = threading.Event()
 
         ##################################################
         # Variables
@@ -71,7 +70,7 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.signal_voltage = signal_voltage = 1
         self.samp_rate = samp_rate = 32000
         self.excess_bw = excess_bw = 0.35
-        self.SNR = SNR = 20
+        self.SNR = SNR = 0
         self.time_offset = time_offset = 1.0001
         self.taps = taps = [1.0 + 0.0j, ]
         self.rrc_taps = rrc_taps = firdes.root_raised_cosine(1.0,samp_rate,samp_rate/sps,excess_bw,11*sps)
@@ -243,7 +242,7 @@ class BPSK(gr.top_block, Qt.QWidget):
             log=False,
             truncate=False)
         self.channels_channel_model_0 = channels.channel_model(
-            noise_voltage=noise_volt,
+            noise_voltage=0,
             frequency_offset=freq_offset,
             epsilon=time_offset,
             taps=taps,
@@ -257,8 +256,10 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.blocks_msgpair_to_var_0 = blocks.msg_pair_to_var(self.set_freq_offset)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
+        self.blocks_add_xx_0 = blocks.add_vcc(1)
         self.blocks_add_const_vxx_0 = blocks.add_const_ff((-0.5))
         self.analog_random_source_x_0 = blocks.vector_source_b(list(map(int, numpy.random.randint(0, 256, 1000))), True)
+        self.analog_noise_source_x_0 = analog.noise_source_c(analog.GR_GAUSSIAN, noise_volt, 0)
 
 
         ##################################################
@@ -267,9 +268,11 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.msg_connect((self.epy_block_0_0, 'rand_out'), (self.blocks_msgpair_to_var_0, 'inpair'))
         self.msg_connect((self.epy_block_1, 'write'), (self.epy_block_0_0, 'trigger'))
         self.msg_connect((self.id_write_button, 'pressed'), (self.epy_block_1, 'enable_write'))
+        self.connect((self.analog_noise_source_x_0, 0), (self.blocks_add_xx_0, 0))
         self.connect((self.analog_random_source_x_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
         self.connect((self.analog_random_source_x_0, 0), (self.digital_constellation_modulator_0, 0))
         self.connect((self.blocks_add_const_vxx_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.blocks_add_xx_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.blocks_char_to_float_0, 0), (self.blocks_add_const_vxx_0, 0))
         self.connect((self.blocks_float_to_complex_0, 0), (self.qtgui_time_sink_x_1, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_repeat_0, 0))
@@ -279,13 +282,13 @@ class BPSK(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_throttle2_0, 0), (self.channels_channel_model_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_time_sink_x_1, 1))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_0, 0))
+        self.connect((self.channels_channel_model_0, 0), (self.blocks_add_xx_0, 1))
         self.connect((self.channels_channel_model_0, 0), (self.epy_block_1, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.digital_constellation_modulator_0, 0), (self.blocks_throttle2_0, 0))
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("gnuradio/flowgraphs", "BPSK")
+        self.settings = Qt.QSettings("GNU Radio", "BPSK")
         self.settings.setValue("geometry", self.saveGeometry())
         self.stop()
         self.wait()
@@ -371,7 +374,7 @@ class BPSK(gr.top_block, Qt.QWidget):
 
     def set_noise_volt(self, noise_volt):
         self.noise_volt = noise_volt
-        self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
+        self.analog_noise_source_x_0.set_amplitude(self.noise_volt)
 
     def get_n_samples(self):
         return self.n_samples
@@ -430,7 +433,6 @@ def main(top_block_cls=BPSK, options=None):
     tb = top_block_cls()
 
     tb.start()
-    tb.flowgraph_started.set()
 
     tb.show()
 

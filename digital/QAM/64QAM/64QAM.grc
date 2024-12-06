@@ -77,7 +77,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '-20'
+    value: '20'
   states:
     bus_sink: false
     bus_source: false
@@ -330,7 +330,7 @@ blocks:
     maxoutbuf: '0'
     min: '0'
     minoutbuf: '0'
-    num_samps: '10000'
+    num_samps: '100000'
     repeat: 'True'
     type: byte
   states:
@@ -428,7 +428,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [776, 148.0]
+    coordinate: [776, 160.0]
     rotation: 0
     state: enabled
 - name: blocks_msgpair_to_var_0
@@ -930,7 +930,7 @@ blocks:
     bus_structure: null
     coordinate: [760, 568.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: qtgui_eye_sink_x_0
   id: qtgui_eye_sink_x
   parameters:
@@ -1559,4 +1559,4 @@ connections:
 
 metadata:
   file_format: 1
-  grc_version: 3.10.11.0
+  grc_version: 3.10.9.2
